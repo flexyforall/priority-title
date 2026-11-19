@@ -111,7 +111,7 @@
   // ---- Hero 3 → 4 (595:6669): photo lands bottom-left 399×242, H1 centres, "7 Regions" highlighted ----
   tl.addLabel('t-h4');
   tl.to(frame, { top: 8, height: 784 }, 't-h4')
-    .to(hero, { y: 1 }, 't-h4') // Figma 784-tall states inset content by 1px
+    .to(hero, { top: 1 }, 't-h4') // Figma 784-tall states inset content by 1px
     .to(menu, { left: 1, top: 1 }, 't-h4')
     .to(media, { left: 1, top: 541, width: 399, height: 242 }, 't-h4')
     .to(heroImg, { left: -110, top: -45, width: 620, height: 254 }, 't-h4')
@@ -325,6 +325,7 @@
 
   function startScroll() {
     root.classList.remove('is-loading');
+    root.classList.add('ready');
     setHeight();
     addEventListener('resize', setHeight);
     addEventListener('scroll', onScroll, { passive: true });
@@ -357,7 +358,7 @@
   }
   // window rects, straight from the Figma loader frames
   const RECT = {
-    start: { x: 0, y: 0, w: 1440, h: 800 },            // 638:29300
+    start: { x: 8, y: 9, w: 1425, h: 784 },            // 638:29300 — lines start on the new 1px frame border (7,9 → 1432,792)
     step2: { x: 55, y: 54, w: 1332, h: 692 },          // 501:4439
     step3: { x: 477, y: 274, w: 483, h: 245 },         // 501:4479 — tight around the P
     step4: { x: 123, y: 93, w: 1190, h: 616 },         // 501:4508
@@ -383,7 +384,7 @@
   function skeleton() {
     gsap.set(inners(menu), { yPercent: 110 });
     gsap.set('.menu-logo img', { opacity: 0 });
-    gsap.set(heroImg, { opacity: 0, scale: 1.35, transformOrigin: '50% 50%' });
+    gsap.set(heroImg, { opacity: 0, scale: 1835 / 1479, transformOrigin: '50% 50%' });
     gsap.set('#tlDark', { opacity: 1 }); gsap.set('#tlLight', { opacity: 0 });
     gsap.set($$('.row p', timeline), { opacity: 0 });
     gsap.set([...inners(title), ...inners(sub)], { yPercent: 110 });
@@ -392,18 +393,19 @@
     gsap.set(inners(btns), { yPercent: 110 });
     gsap.set($$('.arrow', btns), { opacity: 0 });
     gsap.set(vline, { height: 655 });
-    gsap.set($('.frame-stroke'), { opacity: 0 });
+    gsap.set(frame, { outlineColor: 'rgba(0,0,0,0)' });
   }
 
   // Lines first, then texts & photo load in (reference video)
   function heroIntro() {
     const out = 'expo.out';
     return gsap.timeline({ defaults: { ease: 'power3.out' } })
-      .to($('.frame-stroke'), { opacity: 1, duration: 0.5, ease: 'power1.inOut' }, 0)
+      .to(frame, { outlineColor: 'rgba(0,0,0,1)', duration: 0.5, ease: 'power1.inOut' }, 0)
       .to(vline, { height: 28, duration: 1.0, ease: 'power3.inOut' }, 0.1)
       // photo: appears oversized and slowly zooms out to its Figma framing
-      .to(heroImg, { opacity: 1, duration: 0.6, ease: 'power1.out' }, 0.25)
-      .to(heroImg, { scale: 1, duration: 2.2, ease: out }, 0.25)
+      // Hero - Progress bar frame 1 → 2: photo 1835×715 → 1479×605 around the same centre (×1.1818)
+      .to(heroImg, { opacity: 1, duration: 0.7, ease: 'power1.out' }, 0.25)
+      .to(heroImg, { scale: 1, duration: 2.4, ease: out }, 0.25)
       .to('#tlDark', { opacity: 0, duration: 0.6, ease: 'power1.inOut' }, 0.45)
       .add(() => startProgress(), 0.9)
       // texts slide up inside their masks
@@ -414,17 +416,37 @@
       .to(btnAccent, { backgroundColor: 'rgba(191,94,42,1)', boxShadow: 'inset 0px 0px 0 #000, inset 0px 0 0 #000', duration: 0.7, ease: 'power2.inOut' }, 0.6)
       .to(inners(btns), { yPercent: 0, duration: 0.9, stagger: 0.06, ease: out }, 0.85)
       .to($$('.arrow', btns), { opacity: 1, duration: 0.5 }, 1.0)
-      .to($('#scrollHint'), { opacity: 0.2, duration: 0.8, ease: 'power1.out' }, 1.2)
+      .to($('#scrollHint'), { opacity: 1, duration: 0.8, ease: 'power1.out' }, 1.2)
+      .add(() => liveGuides(), 1.2)
       .add(() => { gsap.set(btnAccent, { clearProps: 'boxShadow' }); gsap.set(heroImg, { clearProps: 'transform,opacity' }); });
   }
 
-  /* Progress bar over the hero photo (Hero - Progress bar frames) — loops on its own, independent of scroll */
-  let progressStarted = false;
+  /* Progress bar over the hero photo (frames "Hero - Progress bar" 638:29384 … 638:29699).
+     Runs on its own clock, independent of scroll: appears once, then fills
+     Open order (87) → Title search (419) → Escrow (1017) → full track (1424), resets, repeats. */
+  const fill = $('#tlFill');
+  const STOPS = [87, 419, 1017, 1424];
+  let progressTl = null;
   function startProgress() {
-    if (progressStarted) return;
-    progressStarted = true;
-    gsap.to('#tlLight', { opacity: 1, duration: 0.6 });
-    gsap.to($$('.row p', timeline), { opacity: 1, duration: 0.6, stagger: 0.06 });
+    if (progressTl) return;
+    gsap.to('#tlLight', { opacity: 1, duration: 0.7, ease: 'power1.inOut' });
+    gsap.to($$('.row p', timeline), { opacity: 1, duration: 0.7, stagger: 0.07, ease: 'power1.out' });
+    gsap.set(fill, { scaleX: 0, opacity: 1 });
+    progressTl = gsap.timeline({ repeat: -1, delay: 0.9 });
+    let prev = 0;
+    STOPS.forEach((x, i) => {
+      progressTl.to(fill, { scaleX: x / 1424, duration: 0.6 + (x - prev) / 520, ease: 'power2.inOut' })
+        .to({}, { duration: i === STOPS.length - 1 ? 1.0 : 0.7 });
+      prev = x;
+    });
+    progressTl.to(fill, { opacity: 0, duration: 0.45, ease: 'power1.in' })
+      .set(fill, { scaleX: 0, opacity: 1 })
+      .to({}, { duration: 0.5 });
+  }
+  // final look of the scroll guides (solid #C5C5BF, group nudged −1.11 / +1 as in Figma)
+  function liveGuides() {
+    guides.classList.add('is-live');
+    gsap.set([...$$('.tick', guides), $('#scrollHint'), $('.rot.h', guides)], { x: -1.11, y: 1 });
   }
 
   function runLoader() {
@@ -435,13 +457,14 @@
     const ld = gsap.timeline({ onUpdate: drawRect });
     // 1 · 638:29300 — grey outlined P on the perspective guides (fade only: no scaling = no shake)
     ld.fromTo(['#ldPGrey', '.ld-guides', '#ldFrame'], { opacity: 0 }, { opacity: 1, duration: 0.7, ease: 'power1.out' }, 0)
+      .to('#ldFrame', { opacity: 0, duration: 0.3 }, 0.8)
     // 2 · 501:4439 — P turns orange (cross-fade), the four lines appear at the frame edges
       .to('#ldPOrange', { opacity: 1, duration: 0.5, ease: 'power1.inOut' }, 0.7)
       .to(lines, { opacity: 1, duration: 0.4, ease: 'power1.out' }, 0.7)
     // 2 → 3 · one continuous move: lines glide in and close tight around the logo
       .to(R, { keyframes: { ...path('step2', 'step3'), easeEach: 'none' }, ease: 'power3.inOut', duration: 1.4 }, 0.8)
     // logo & guides fade while the window is closed
-      .to(['#ldPGrey', '#ldPOrange', '.ld-guides', '#ldFrame'], { opacity: 0, duration: 0.35, ease: 'power1.in' }, 2.15)
+      .to(['#ldPGrey', '#ldPOrange', '.ld-guides'], { opacity: 0, duration: 0.35, ease: 'power1.in' }, 2.15)
       .set(ldArt, { autoAlpha: 0 }, 2.5)
     // 3 → 4 → hero · lines open up and reveal the hero grid (Loader -> Hero)
       .to(R, { keyframes: { ...path('step4', 'hero'), easeEach: 'none' }, ease: 'power3.inOut', duration: 1.3 }, 2.45)
@@ -454,15 +477,16 @@
      BOOT
      ====================================================================== */
   const ready = document.fonts ? document.fonts.ready : Promise.resolve();
-  const imgs = ['assets/hero/hero-photo-full.png', 'assets/loader/letter-p-grey.svg', 'assets/loader/letter-p-orange.svg', 'assets/loader/guides-perspective.svg']
+  const imgs = ['assets/hero/hero-photo-full.png', 'assets/loader/letter-p-grey-v2.svg', 'assets/loader/letter-p-orange-v2.svg', 'assets/loader/guides-perspective-v2-loader1.svg', 'assets/common/texture-stripes.svg']
     .map(src => new Promise(res => { const i = new Image(); i.onload = i.onerror = res; i.src = src; }));
 
   if (hashState) {
     // review mode: #state=<label> renders that Figma state instantly (no loader)
     $('#loader').style.display = 'none';
     root.classList.remove('is-loading');
+    if (hashState !== 'loader-hero') { root.classList.add('ready'); liveGuides(); gsap.set('#tlDark', { opacity: 0 }); startProgress(); }
     const lab = hashState === 'static' ? 'hero-1' : hashState;
-    if (lab === 'loader-hero') { skeleton(); gsap.set($('.frame-stroke'), { opacity: 1 }); }
+    if (lab === 'loader-hero') { skeleton(); gsap.set(frame, { outlineColor: 'rgba(0,0,0,1)' }); }
     const t = L[lab] !== undefined ? L[lab] : 0;
     tl.time(t);
     curTab = tabAt(t); curSvc = svcAt(t); setTab(curTab, true); setSvc(curSvc, true);

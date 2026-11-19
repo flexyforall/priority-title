@@ -21,14 +21,16 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 /* ---------- frame (1424×784, 1.5px black stroke inside) ---------- */
 .frame { position: absolute; left: 8px; top: 10px; width: 1424px; height: 782px; overflow: hidden; background: var(--color-background-primary); }
-.frame-stroke { position: absolute; inset: 0; border: 1.5px solid var(--color-border-strong); pointer-events: none; z-index: 50; }
+/* Figma draws the 1.5px inner-frame stroke OUTSIDE the box (x 6.5–8, y 8.5–10): an outline does exactly that and is not clipped */
+.frame { outline: 1.5px solid var(--color-border-strong); }
 .scene { position: absolute; inset: 0; }
 
 /* rotated svg line helper (Figma: flex center wrapper + rotated child) */
 .rot { position: absolute; display: flex; align-items: center; justify-content: center; }
 .rot > * { flex: none; }
 .tick { position: absolute; width: 7.778px; height: 7.778px; display: flex; align-items: center; justify-content: center; }
-.tick::before { content: ""; width: 2px; height: 9px; background: var(--color-background-inverse); transform: rotate(45deg); flex: none; }
+.tick::before { content: ""; width: 2px; height: 9px; background: var(--tick, var(--color-background-inverse)); transform: rotate(45deg); flex: none; transition: background-color .6s ease; }
+.hero-guides.is-live { --tick: #c5c5bf; }
 
 /* ---------- header / menu ---------- */
 .menu {
@@ -54,7 +56,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .btn-row { position: absolute; right: 0; bottom: 0; width: 712px; height: 80px; display: flex; align-items: flex-start; z-index: 3; }
 .btn { flex: 1 0 0; min-width: 1px; height: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 0 20px; position: relative; }
 .btn-accent { background: var(--color-background-accent); color: var(--color-text-inverse); }
-.btn-ghost { background: var(--color-background-primary); color: var(--color-text-secondary); border-top: 1.005px solid var(--color-border-strong); }
+.btn-ghost { background: transparent; color: var(--color-text-secondary); border-top: 1.005px solid var(--color-border-strong); } /* texture shows through (638:29384) */
 .btn .arrow { display: flex; align-items: center; padding-top: 2px; }
 .btn .arrow img { width: 20px; height: 20px; transition: transform .3s ease; }
 .btn:hover .arrow img { transform: translateX(4px); }
@@ -82,6 +84,9 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .hero-timeline .grp-a { gap: 240px; }
 .hero-timeline .grp-b { gap: 280px; }
 .hero-timeline .line { position: absolute; left: 10px; top: -4px; width: 1424px; height: 7.778px; }
+.hero-timeline .line img { position: absolute; inset: 0; width: 1424px; height: 7.778px; }
+/* progress fill (Line 62): 1px solid #F6F6EF on the track's centre line (svg y 3.5) */
+.tl-fill { position: absolute; left: 0; top: 3px; height: 1px; width: 1424px; background: var(--color-text-inverse); transform: scaleX(0); transform-origin: 0 50%; will-change: transform; }
 
 .hero-title { width: 574px; color: var(--color-text-primary); position: absolute; left: 40px; top: 522px; z-index: 4; } /* +2: Coconat baseline in Chrome vs Figma */
 .hero-sub { width: 586px; color: var(--color-text-secondary); position: absolute; left: 40px; top: 679px; }
@@ -91,7 +96,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .hero-guides .vclip .vin { position: absolute; left: 0; bottom: 0; width: 2px; height: 655px; }
 .hero-guides .vclip img { position: absolute; left: 1.5px; top: 0; width: 655px; height: 1px; transform-origin: 0 0; transform: rotate(90deg); }
 .hero-guides .h { left: 712px; top: 192px; width: 712px; height: 0; }
-.scroll-hint { position: absolute; left: 1039px; top: 169px; display: flex; gap: 2px; align-items: center; opacity: .2; color: var(--color-text-primary); font-weight: 500; }
+.scroll-hint { position: absolute; left: 1039px; top: 169px; display: flex; gap: 2px; align-items: center; color: #c5c5bf; font-weight: 500; } /* was black @20% → solid #C5C5BF */
 .scroll-hint .ar { width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; }
 .scroll-hint .ar img { width: 14px; height: 14px; transform: rotate(90deg); }
 
@@ -182,7 +187,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 #loader > *, #loader .ld-art > * { position: absolute; }
 .ld-art { inset: 0; background: var(--color-background-primary); will-change: clip-path; }
 .ld-art img { opacity: 0; }
-.ld-frame { display: block; opacity: 0; }
+.ld-frame { display: block; opacity: 0; left: 7px; top: 9px; width: 1426px; height: 784px; border: 1px solid rgba(0, 0, 0, 0.16); } /* 638:29301, stroke outside the 1424×782 box */
 .ld-cover { display: block; left: 0; top: 0; width: 1440px; height: 800px; background: var(--color-background-primary); will-change: transform; }
 .ld-line { display: block; left: 0; top: 0; background: rgba(0, 0, 0, 0.16); will-change: transform; }
 .ld-line.h { width: 1440px; height: 1px; }
@@ -194,3 +199,14 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .ready .nav-dots { opacity: 1; }
 .nav-dots button { width: 8px; height: 8px; border: 1px solid #000; background: transparent; padding: 0; }
 .nav-dots button.on { background: #000; }
+
+/* scroll guides: final hero look is solid #C5C5BF (Buttons 638:29792) */
+.hero-guides .rot.h .c5 { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity .6s ease; }
+.hero-guides.is-live .rot.h .c5 { opacity: 1; }
+.vline-c5 { position: absolute; left: 712.89px; top: 194px; width: 28px; height: 1px; transform-origin: 0 0; transform: rotate(90deg); opacity: 0; transition: opacity .6s ease; }
+.hero-guides.is-live .vline-c5 { opacity: 1; }
+
+/* texture: above every layer of the stage (loader included); only the orange button paints over it */
+.texture { position: absolute; left: 0; top: 0; width: 1440px; height: 800px; pointer-events: none; z-index: 110; }
+.ready .btn-row { z-index: 120; }
+.ready .btn-row .btn-ghost { pointer-events: auto; }

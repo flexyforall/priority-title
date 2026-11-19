@@ -39,7 +39,7 @@
               <div class="grp grp-b"><p>Escrow</p><p>Closing</p></div>
             </div>
             <img class="line" id="tlDark" src="assets/hero/timeline-empty.svg" alt="">
-            <img class="line" id="tlLight" src="assets/hero/timeline.svg" alt="">
+            <div class="line" id="tlLight"><img src="assets/hero/progress-track.svg" alt=""><i class="tl-fill" id="tlFill"></i></div>
           </div>
 
           <h1 class="hero-title t-h1" id="heroTitle"><span class="line-mask"><span class="line-inner">A safer way to finalize</span></span><span class="line-mask"><span class="line-inner">real estate deals.</span></span></h1>
@@ -54,10 +54,11 @@
           <div class="hero-guides" id="heroGuides">
             <!-- vertical dashed guide: 655px long in "Loader -> Hero", 28px in Hero (bottom-anchored at 221) -->
             <div class="vclip" id="heroVLine"><div class="vin"><img src="assets/hero/line-vertical-655.svg" alt=""></div></div>
-            <div class="rot h"><div style="transform:rotate(180deg)"><div style="position:relative;width:712px;height:0"><div style="position:absolute;inset:-1px 0 0 0"><img src="assets/common/line-dashed-712.svg" alt="" style="width:100%;height:100%"></div></div></div></div>
+            <div class="rot h"><div style="transform:rotate(180deg)"><div style="position:relative;width:712px;height:0"><div style="position:absolute;inset:-1px 0 0 0"><img src="assets/common/line-dashed-712.svg" alt="" style="width:100%;height:100%"><img class="c5" src="assets/hero/scroll-line-h-712-c5.svg" alt=""></div></div></div></div>
+            <img class="vline-c5" id="vlineC5" src="assets/hero/scroll-line-v-28-c5.svg" alt="">
             <span class="tick" style="left:709.11px;bottom:105.61px"></span>
             <span class="tick" style="right:-5.41px;bottom:105.61px"></span>
-            <div class="scroll-hint t-label" id="scrollHint"><span>scroll</span><span class="ar"><img src="assets/common/arrow-right-scroll.svg" alt=""></span></div>
+            <div class="scroll-hint t-label" id="scrollHint"><span>scroll</span><span class="ar"><img src="assets/common/arrow-right-scroll-c5.svg" alt=""></span></div>
           </div>
 
           <div class="btn-row" id="heroBtns">
@@ -466,16 +467,18 @@ moving with confidence</span><span class="h3-dot">.</span></h3>
           <a class="menu-cell menu-cta" href="#" id="menuCta"><span class="t-btn-s">Start an order</span><i class="mark" style="left:-1.67px"></i></a>
         </header>
 
-        <div class="frame-stroke"></div>
       </div>
+
+      <!-- diagonal texture (Texture 638:29764…): on top of everything except the orange button -->
+      <img class="texture" src="assets/common/texture-stripes.svg" alt="">
 
       <!-- ================= LOADER (Figma 485:4400 → 501:4439 → 501:4479 → 501:4508 → 562:6444) ================= -->
       <div id="loader">
         <div class="ld-art" id="ldArt">
-          <img class="ld-guides" src="assets/loader/guides-perspective.svg" alt="" style="left:-30.48px;top:-40.87px;width:1490.98px;height:880.875px">
+          <img class="ld-guides" src="assets/loader/guides-perspective-v2-loader1.svg" alt="" style="left:-26.47px;top:-37.87px;width:1490.98px;height:878.875px">
           <i class="ld-frame" id="ldFrame"></i>
-          <img class="ld-p" id="ldPGrey" src="assets/loader/letter-p-grey.svg" alt="" style="left:675px;top:345px;width:84px;height:106px">
-          <img class="ld-p" id="ldPOrange" src="assets/loader/letter-p-orange.svg" alt="" style="left:675px;top:345px;width:84px;height:106px">
+          <img class="ld-p" id="ldPGrey" src="assets/loader/letter-p-grey-v2.svg" alt="" style="left:681px;top:346px;width:78px;height:105px">
+          <img class="ld-p" id="ldPOrange" src="assets/loader/letter-p-orange-v2.svg" alt="" style="left:681px;top:346px;width:78px;height:105px">
         </div>
         <i class="ld-cover"></i><i class="ld-cover"></i><i class="ld-cover"></i><i class="ld-cover"></i>
         <i class="ld-line h" id="ldT"></i><i class="ld-line h" id="ldB"></i><i class="ld-line v" id="ldL"></i><i class="ld-line v" id="ldR"></i>
