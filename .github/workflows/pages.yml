@@ -2,7 +2,7 @@ name: Deploy prototype to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches: [main, claude/eager-fermi-ph59v0]
   workflow_dispatch:
 
 permissions:
