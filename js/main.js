@@ -334,75 +334,120 @@
   /* ======================================================================
      LOADER  (485:4400 → 501:4439 → 501:4479 → 501:4508 → 562:6444 → hero 512:4618)
      ====================================================================== */
-  const win = $('#ldWin'), inner = $('#ldInner');
+  /* The loader never moves its artwork (that is what made the logo shake before):
+     - #ldArt (guides + P) stays put and is only clipped with clip-path: inset(R)
+     - four covers mask everything outside R, the four lines sit on R's edges
+     - covers and lines move with transforms only (GPU, sub-pixel smooth) */
+  const ldArt = $('#ldArt');
+  const covers = $$('.ld-cover');
   const ldT = $('#ldT'), ldB = $('#ldB'), ldLn = $('#ldL'), ldR = $('#ldR');
+  const lines = [ldT, ldB, ldLn, ldR];
   const R = { x: 0, y: 0, w: 1440, h: 800 };
   function drawRect() {
-    gsap.set(win, { left: R.x, top: R.y, width: R.w, height: R.h });
-    gsap.set(inner, { x: -R.x, y: -R.y });
-    gsap.set(ldT, { top: R.y }); gsap.set(ldB, { top: R.y + R.h - 1 });
-    gsap.set(ldLn, { left: R.x - 1 }); gsap.set(ldR, { left: R.x + R.w - 1 });
+    const r = 1440 - R.x - R.w, b = 800 - R.y - R.h;
+    ldArt.style.clipPath = `inset(${R.y}px ${r}px ${b}px ${R.x}px)`;
+    covers[0].style.transform = `translate3d(0, ${R.y - 800}px, 0)`;
+    covers[1].style.transform = `translate3d(0, ${R.y + R.h}px, 0)`;
+    covers[2].style.transform = `translate3d(${R.x - 1440}px, 0, 0)`;
+    covers[3].style.transform = `translate3d(${R.x + R.w}px, 0, 0)`;
+    ldT.style.transform = `translate3d(0, ${R.y}px, 0)`;
+    ldB.style.transform = `translate3d(0, ${R.y + R.h - 1}px, 0)`;
+    ldLn.style.transform = `translate3d(${R.x - 1}px, 0, 0)`;
+    ldR.style.transform = `translate3d(${R.x + R.w - 1}px, 0, 0)`;
   }
+  // window rects, straight from the Figma loader frames
+  const RECT = {
+    start: { x: 0, y: 0, w: 1440, h: 800 },            // 638:29300
+    step2: { x: 55, y: 54, w: 1332, h: 692 },          // 501:4439
+    step3: { x: 477, y: 274, w: 483, h: 245 },         // 501:4479 — tight around the P
+    step4: { x: 123, y: 93, w: 1190, h: 616 },         // 501:4508
+    hero:  { x: 8, y: 10, w: 1424, h: 782 },           // 562:6444 — the hero frame
+  };
+  const path = (...keys) => ({ x: keys.map(k => RECT[k].x), y: keys.map(k => RECT[k].y), w: keys.map(k => RECT[k].w), h: keys.map(k => RECT[k].h) });
 
   // Hero "skeleton" (Loader -> Hero 562:6444): everything but the grid is invisible
   const menuTexts = $$('.menu-cell > span, .menu-logo img', menu);
   const btnAccent = $('.btn-accent', btns);
   const btnTexts = $$('.btn > *', btns);
   const vline = $('#heroVLine');
+  // masked line reveal helpers (reference: text slides up line by line inside a mask)
+  function maskify(el) {
+    if (el.querySelector('.line-mask')) return;
+    el.innerHTML = `<span class="line-mask"><span class="line-inner">${el.innerHTML}</span></span>`;
+  }
+  const revealTexts = [...menuTexts.filter(e => e.tagName !== 'IMG'), ...btnTexts.filter(e => !e.classList.contains('arrow')), $('#scrollHint > span')];
+  revealTexts.forEach(maskify);
+  const inners = el => $$('.line-inner', el);
+
+  // Hero "skeleton" (Loader -> Hero 562:6444): only the grid lines are visible
   function skeleton() {
-    gsap.set(menuTexts, { opacity: 0 });
-    gsap.set(media, { clipPath: 'inset(0% 0% 100% 0%)' });
+    gsap.set(inners(menu), { yPercent: 110 });
+    gsap.set('.menu-logo img', { opacity: 0 });
+    gsap.set(heroImg, { opacity: 0, scale: 1.35, transformOrigin: '50% 50%' });
     gsap.set('#tlDark', { opacity: 1 }); gsap.set('#tlLight', { opacity: 0 });
     gsap.set($$('.row p', timeline), { opacity: 0 });
-    gsap.set([title, sub, $('#scrollHint')], { opacity: 0 });
+    gsap.set([...inners(title), ...inners(sub)], { yPercent: 110 });
+    gsap.set($('#scrollHint'), { opacity: 0 });
     gsap.set(btnAccent, { backgroundColor: 'rgba(191,94,42,0)', boxShadow: 'inset 1px 1px 0 #000, inset -1px 0 0 #000' });
-    gsap.set(btnTexts, { opacity: 0 });
+    gsap.set(inners(btns), { yPercent: 110 });
+    gsap.set($$('.arrow', btns), { opacity: 0 });
     gsap.set(vline, { height: 655 });
     gsap.set($('.frame-stroke'), { opacity: 0 });
   }
 
+  // Lines first, then texts & photo load in (reference video)
   function heroIntro() {
+    const out = 'expo.out';
     return gsap.timeline({ defaults: { ease: 'power3.out' } })
-      .to($('.frame-stroke'), { opacity: 1, duration: 0.4 }, 0)
-      .to(vline, { height: 28, duration: 0.9, ease: 'power3.inOut' }, 0)
-      .to(media, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.1, ease: 'power3.inOut' }, 0.05)
-      .fromTo(heroImg, { scale: 1.12 }, { scale: 1, duration: 1.6 }, 0.05)
-      .to('#tlDark', { opacity: 0, duration: 0.5 }, 0.5)
-      .to('#tlLight', { opacity: 1, duration: 0.5 }, 0.5)
-      .fromTo($$('.row p', timeline), { opacity: 0, y: 10 }, { opacity: 1, y: 0, stagger: 0.06, duration: 0.6 }, 0.75)
-      .fromTo(menuTexts, { opacity: 0, y: 6 }, { opacity: 1, y: 0, stagger: 0.04, duration: 0.5 }, 0.35)
-      .to(btnAccent, { backgroundColor: 'rgba(191,94,42,1)', boxShadow: 'inset 0 0 0 #000, inset 0 0 0 #000', duration: 0.6, ease: 'power2.inOut' }, 0.6)
-      .fromTo(btnTexts, { opacity: 0, y: 8 }, { opacity: 1, y: 0, stagger: 0.05, duration: 0.5 }, 0.85)
-      .fromTo(title, { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.9 }, 0.7)
-      .fromTo(sub, { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.8 }, 0.85)
-      .to($('#scrollHint'), { opacity: 0.2, duration: 0.6 }, 1.2)
-      .add(() => { gsap.set([btnAccent], { clearProps: 'boxShadow' }); gsap.set(heroImg, { clearProps: 'transform' }); });
+      .to($('.frame-stroke'), { opacity: 1, duration: 0.5, ease: 'power1.inOut' }, 0)
+      .to(vline, { height: 28, duration: 1.0, ease: 'power3.inOut' }, 0.1)
+      // photo: appears oversized and slowly zooms out to its Figma framing
+      .to(heroImg, { opacity: 1, duration: 0.6, ease: 'power1.out' }, 0.25)
+      .to(heroImg, { scale: 1, duration: 2.2, ease: out }, 0.25)
+      .to('#tlDark', { opacity: 0, duration: 0.6, ease: 'power1.inOut' }, 0.45)
+      .add(() => startProgress(), 0.9)
+      // texts slide up inside their masks
+      .to('.menu-logo img', { opacity: 1, duration: 0.6, ease: 'power1.out' }, 0.35)
+      .to(inners(menu), { yPercent: 0, duration: 0.9, stagger: 0.05, ease: out }, 0.4)
+      .to(inners(title), { yPercent: 0, duration: 1.1, stagger: 0.1, ease: out }, 0.55)
+      .to(inners(sub), { yPercent: 0, duration: 1.0, stagger: 0.08, ease: out }, 0.8)
+      .to(btnAccent, { backgroundColor: 'rgba(191,94,42,1)', boxShadow: 'inset 0px 0px 0 #000, inset 0px 0 0 #000', duration: 0.7, ease: 'power2.inOut' }, 0.6)
+      .to(inners(btns), { yPercent: 0, duration: 0.9, stagger: 0.06, ease: out }, 0.85)
+      .to($$('.arrow', btns), { opacity: 1, duration: 0.5 }, 1.0)
+      .to($('#scrollHint'), { opacity: 0.2, duration: 0.8, ease: 'power1.out' }, 1.2)
+      .add(() => { gsap.set(btnAccent, { clearProps: 'boxShadow' }); gsap.set(heroImg, { clearProps: 'transform,opacity' }); });
+  }
+
+  /* Progress bar over the hero photo (Hero - Progress bar frames) — loops on its own, independent of scroll */
+  let progressStarted = false;
+  function startProgress() {
+    if (progressStarted) return;
+    progressStarted = true;
+    gsap.to('#tlLight', { opacity: 1, duration: 0.6 });
+    gsap.to($$('.row p', timeline), { opacity: 1, duration: 0.6, stagger: 0.06 });
   }
 
   function runLoader() {
     skeleton();
+    Object.assign(R, RECT.start);
     drawRect();
-    const lines = [ldT, ldB, ldLn, ldR];
-    const ld = gsap.timeline({ defaults: { ease: 'power3.inOut' }, onUpdate: drawRect });
-    // 1 · 485:4400 — grey outlined P on the perspective guides
-    ld.fromTo('#ldPGrey', { opacity: 0, scale: 0.92 }, { opacity: 1, scale: 1, duration: 0.6, ease: 'power2.out' }, 0)
-      .fromTo('.ld-guides', { opacity: 0 }, { opacity: 1, duration: 0.6, ease: 'power1.out' }, 0)
-      .fromTo('#ldPOrange', { opacity: 0 }, { opacity: 0, duration: 0.01 }, 0)
-    // 2 · 501:4439 — P turns orange, frame lines arrive at the 55/54 inset
-      .to('#ldPOrange', { opacity: 1, duration: 0.35, ease: 'power1.inOut' }, 0.75)
-      .set(lines, { opacity: 1 }, 0.75)
-      .to(R, { x: 55, y: 54, w: 1332, h: 692, duration: 0.55 }, 0.75)
-    // 3 · 501:4479 — window closes tight around the logo
-      .to(R, { x: 477, y: 274, w: 483, h: 245, duration: 0.6 }, 1.4)
-    // 4 · 501:4508 — logo & guides go, window opens onto the hero skeleton
-      .to(['#ldPGrey', '#ldPOrange', '.ld-guides'], { opacity: 0, duration: 0.25, ease: 'power1.in' }, 2.1)
-      .set(win, { backgroundColor: 'rgba(246,246,239,0)' }, 2.35)
-      .to(R, { x: 123, y: 93, w: 1190, h: 616, duration: 0.6 }, 2.2)
-    // 5 · 562:6444 — window = frame (8,10 1424×782)
-      .to(R, { x: 8, y: 10, w: 1424, h: 782, duration: 0.5 }, 2.85)
-      .to(lines, { opacity: 0, duration: 0.3 }, 3.3)
-      .add(() => { $('#loader').style.display = 'none'; }, 3.6)
-      .add(() => { heroIntro().eventCallback('onComplete', startScroll); }, 3.35);
+    gsap.set(lines, { opacity: 0 });
+    const ld = gsap.timeline({ onUpdate: drawRect });
+    // 1 · 638:29300 — grey outlined P on the perspective guides (fade only: no scaling = no shake)
+    ld.fromTo(['#ldPGrey', '.ld-guides', '#ldFrame'], { opacity: 0 }, { opacity: 1, duration: 0.7, ease: 'power1.out' }, 0)
+    // 2 · 501:4439 — P turns orange (cross-fade), the four lines appear at the frame edges
+      .to('#ldPOrange', { opacity: 1, duration: 0.5, ease: 'power1.inOut' }, 0.7)
+      .to(lines, { opacity: 1, duration: 0.4, ease: 'power1.out' }, 0.7)
+    // 2 → 3 · one continuous move: lines glide in and close tight around the logo
+      .to(R, { keyframes: { ...path('step2', 'step3'), easeEach: 'none' }, ease: 'power3.inOut', duration: 1.4 }, 0.8)
+    // logo & guides fade while the window is closed
+      .to(['#ldPGrey', '#ldPOrange', '.ld-guides', '#ldFrame'], { opacity: 0, duration: 0.35, ease: 'power1.in' }, 2.15)
+      .set(ldArt, { autoAlpha: 0 }, 2.5)
+    // 3 → 4 → hero · lines open up and reveal the hero grid (Loader -> Hero)
+      .to(R, { keyframes: { ...path('step4', 'hero'), easeEach: 'none' }, ease: 'power3.inOut', duration: 1.3 }, 2.45)
+      .to(lines, { opacity: 0, duration: 0.45, ease: 'power1.inOut' }, 3.6)
+      .add(() => heroIntro().eventCallback('onComplete', startScroll), 3.55)
+      .add(() => { $('#loader').style.display = 'none'; }, 4.1);
   }
 
   /* ======================================================================

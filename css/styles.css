@@ -173,17 +173,20 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .svc-copy .t-body-m { color: var(--color-text-secondary); }
 
 /* split-line reveal helpers */
-.line-mask { display: block; overflow: hidden; }
+.line-mask { display: block; overflow: hidden; padding-bottom: 0.12em; margin-bottom: -0.12em; }
+.t-btn-s .line-mask, .t-btn-l .line-mask, .t-label .line-mask { display: inline-block; vertical-align: top; }
 .line-inner { display: block; will-change: transform; }
 
 /* ---------- LOADER ---------- */
 #loader { position: absolute; inset: 0; z-index: 100; pointer-events: none; }
-#loader > *, #loader .ld-inner > * { position: absolute; }
-.ld-win { left: 0; top: 0; width: 1440px; height: 800px; overflow: hidden; background: var(--color-background-primary); box-shadow: 0 0 0 3000px var(--color-background-primary); }
-.ld-inner { left: 0; top: 0; width: 1440px; height: 800px; }
-.ld-line { display: block; background: rgba(0, 0, 0, 0.16); opacity: 0; }
-.ld-line.h { left: 0; width: 1440px; height: 1px; }
-.ld-line.v { top: 0; height: 800px; width: 1px; }
+#loader > *, #loader .ld-art > * { position: absolute; }
+.ld-art { inset: 0; background: var(--color-background-primary); will-change: clip-path; }
+.ld-art img { opacity: 0; }
+.ld-frame { display: block; opacity: 0; }
+.ld-cover { display: block; left: 0; top: 0; width: 1440px; height: 800px; background: var(--color-background-primary); will-change: transform; }
+.ld-line { display: block; left: 0; top: 0; background: rgba(0, 0, 0, 0.16); will-change: transform; }
+.ld-line.h { width: 1440px; height: 1px; }
+.ld-line.v { height: 800px; width: 1px; }
 .h3-dot { opacity: 0; }
 
 /* ---------- debug / review helpers ---------- */
