@@ -1,0 +1,64 @@
+/* Design tokens — 1:1 from Figma variables (file "Priority title") */
+@font-face {
+  font-family: "Coconat";
+  src: url("../assets/fonts/Coconat-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "Overused Grotesk";
+  src: url("../assets/fonts/OverusedGrotesk-Roman.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "Overused Grotesk";
+  src: url("../assets/fonts/OverusedGrotesk-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: block;
+}
+
+:root {
+  /* colors */
+  --color-background-primary: #f6f6ef;
+  --color-background-inverse: #000000;
+  --color-background-accent: #bf5e2a;
+  --color-border-strong: #000000;
+  --color-border-default: rgba(0, 0, 0, 0.16);
+  --color-text-primary: #000000;
+  --color-text-secondary: #4a4a48;
+  --color-text-tertiary: #7b7b78;
+  --color-text-accent: #bf5e2a;
+  --color-text-inverse: #f6f6ef;
+
+  /* fonts */
+  --font-heading: "Coconat", serif;
+  --font-body: "Overused Grotesk", sans-serif;
+
+  /* sizes */
+  --font-size-heading-h1: 56px;
+  --font-size-heading-h2: 44px;
+  --font-size-heading-h3: 32px;
+  --font-size-body-l: 24px;
+  --font-size-body-m: 20px;
+  --font-size-body-s: 16px;
+  --font-size-button-l: 20px;
+  --font-size-button-m: 16px;
+  --font-size-button-s: 14px;
+  --font-size-label-s: 14px;
+}
+
+/* Text styles (letter-spacing "-2%" in Figma = -0.02em) */
+.t-h1 { font-family: var(--font-heading); font-weight: 400; font-size: var(--font-size-heading-h1); line-height: 1.1; letter-spacing: -1.12px; }
+.t-h2 { font-family: var(--font-heading); font-weight: 400; font-size: var(--font-size-heading-h2); line-height: 1.1; letter-spacing: -0.88px; }
+.t-h3 { font-family: var(--font-heading); font-weight: 400; font-size: var(--font-size-heading-h3); line-height: 1.1; letter-spacing: -0.64px; }
+.t-body-l { font-family: var(--font-body); font-weight: 400; font-size: var(--font-size-body-l); line-height: 1.6; letter-spacing: -0.48px; }
+.t-body-m { font-family: var(--font-body); font-weight: 400; font-size: var(--font-size-body-m); line-height: 1.6; letter-spacing: -0.4px; }
+.t-body-s { font-family: var(--font-body); font-weight: 400; font-size: var(--font-size-body-s); line-height: 1.6; letter-spacing: -0.32px; }
+.t-btn-l { font-family: var(--font-body); font-weight: 500; font-size: var(--font-size-button-l); line-height: 1.2; letter-spacing: -0.4px; white-space: nowrap; }
+.t-btn-m { font-family: var(--font-body); font-weight: 500; font-size: var(--font-size-button-m); line-height: 1.2; letter-spacing: -0.32px; white-space: nowrap; }
+.t-btn-s { font-family: var(--font-body); font-weight: 500; font-size: var(--font-size-button-s); line-height: 1.2; letter-spacing: -0.28px; white-space: nowrap; }
+.t-label { font-family: var(--font-body); font-size: var(--font-size-label-s); line-height: 1.2; letter-spacing: 0.56px; text-transform: uppercase; white-space: nowrap; }
