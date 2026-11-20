@@ -232,7 +232,7 @@
   tl.addLabel('t-s1');
   const yAt = (u) => 704 * (1 - u / SCROLL);    // services offset at time u (linear)
   tl.set(services, { autoAlpha: 1, y: 704 }, 't-s1')
-    .fromTo(services, { clipPath: `inset(0px 0px ${80 + yAt(0)}px 0px)` }, { clipPath: `inset(0px 0px ${80 + yAt(1.4)}px 0px)`, ease: 'none', duration: 1.4 }, 't-s1')
+    .fromTo(services, { clipPath: `inset(-1px 0px ${80 + yAt(0)}px 0px)` }, { clipPath: `inset(-1px 0px ${80 + yAt(1.4)}px 0px)`, ease: 'none', duration: 1.4 }, 't-s1')
     .set(svcList, { autoAlpha: 0 }, 't-s1')
     .to(services, { y: 0, ease: 'none', duration: SCROLL }, 't-s1')
     .to([fWin, ...fGuides], { y: -704, ease: 'none', duration: SCROLL }, 't-s1')
@@ -251,7 +251,7 @@
     .to(barLabel, { opacity: 1, duration: 0.35, ease: 'power1.out' }, 't-s1+=1.0')
     // 3 · the button grows up into the four list rows (722:55923)
     .set(featTabs, { autoAlpha: 0 }, 't-s1+=1.4')
-    .set(services, { clipPath: 'inset(0px 0px 0px 0px)' }, 't-s1+=1.4')
+    .set(services, { clipPath: 'inset(-1px 0px 0px 0px)' }, 't-s1+=1.4')
     .set(svcList, { autoAlpha: 1 }, 't-s1+=1.4')
     .fromTo(svcList, { clipPath: `inset(${ROW0}px 0px 0px 0px)` }, { clipPath: 'inset(0px 0px 0px 0px)', ease: 'power1.inOut', duration: SCROLL - 1.4 }, 't-s1+=1.4')
     .fromTo(svcItems, { y: (i) => ROW0 + 4 - 72 * i }, { y: 0, ease: 'power1.inOut', duration: SCROLL - 1.4 }, 't-s1+=1.4')
