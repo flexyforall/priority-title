@@ -161,66 +161,55 @@
     .to(capOf(2), { opacity: 1, duration: 0.6 }, 't-h6+=0.4');
   tl.addLabel('hero-6'); hold(0.8);
 
-  // ---- hero-6 → F1 (677:37473): the centre line doubles and the two halves open from the middle ----
+  // ---- hero-6 → Features intro: ONE continuous, scroll-like move (no stops between the storyboard frames) ----
+  // Storyboard 677:37473 (F1) → 677:37552 (F2) → 677:37577 (F3) → 677:37602 (F4). The tweens overlap so the motion never
+  // comes to rest in between; vertical rises are linear (they feel like the page itself scrolling up).
   const ink = 'rgba(0,0,0,0.16)';
+  const SPLIT = 2.0;                       // lines: centre (709) → card edges (155 / 1267)
   tl.addLabel('t-f0');
   tl.set(features, { autoAlpha: 1 }, 't-f0')
     .set(colLine, { opacity: 0 }, 't-f0')
-    .to(fLineL, { left: 670, ease: 'power2.inOut', duration: 0.8 }, 't-f0')
-    .to(fLineR, { left: 752, ease: 'power2.inOut', duration: 0.8 }, 't-f0')
-    .to(fWin, { clipPath: 'inset(0px 671px 0px 670px)', ease: 'power2.inOut', duration: 0.8 }, 't-f0')
-    // left half (H1 + photo) moves with the left line, the photo shrinks ×0.7972 about its bottom-left corner
-    .to(title, { left: 1, top: 304 + 1, ease: 'power2.inOut', duration: 0.8 }, 't-f0')
-    .to(media, { left: -39, top: 592, width: 328.445, height: 192, ease: 'power2.inOut', duration: 0.8 }, 't-f0')
-    .to(heroImg, { left: -164.445, top: -44, width: 657.334, height: 268.889, ease: 'power2.inOut', duration: 0.8 }, 't-f0')
-    // right half (stats) moves with the right line
-    .to(stats, { x: 39, y: STAT_Y.E - 199, ease: 'power2.inOut', duration: 0.8 }, 't-f0')
+    .to(fLineL, { left: 155, ease: 'power2.inOut', duration: SPLIT }, 't-f0')
+    .to(fLineL, { top: 49, height: 655, ease: 'none', duration: 0.4 }, 't-f0+=1.2')
+    .to(fLineR, { left: 1267, ease: 'power2.inOut', duration: SPLIT }, 't-f0')
+    .to(fWin, { clipPath: 'inset(0px 156px 0px 155px)', ease: 'power2.inOut', duration: SPLIT }, 't-f0')
+    // the two hero halves travel with their lines (left: H1 + photo, right: stats)
+    .to([title, media], { x: 155 - 709, ease: 'power2.inOut', duration: SPLIT }, 't-f0')
+    .to(stats, { x: 1267 - 709, ease: 'power2.inOut', duration: SPLIT }, 't-f0')
+    .to(title, { top: 304 + 1, ease: 'power1.inOut', duration: 0.9 }, 't-f0')
+    .to(media, { left: -39, top: 592, width: 328.445, height: 192, ease: 'power1.inOut', duration: 0.9 }, 't-f0')
+    .to(heroImg, { left: -164.445, top: -44, width: 657.334, height: 268.889, ease: 'power1.inOut', duration: 0.9 }, 't-f0')
+    .to(stats, { y: STAT_Y.E - 199, ease: 'none', duration: 1.2 }, 't-f0')
     .to(statEls[2], { opacity: 0.3, duration: 0.6 }, 't-f0')
     .to(capOf(2), { opacity: 0, duration: 0.4 }, 't-f0')
-    // CTA buttons empty out (they become the tab cells)
+    .set(hero, { autoAlpha: 0 }, 't-f0+=' + SPLIT)
+    .set(fWin, { clipPath: 'inset(0px 0px 0px 0px)' }, 't-f0+=' + SPLIT)
+    // CTA buttons empty out, then grow into the four tab cells together with the lines
     .to(btnAccent, { backgroundColor: 'rgba(191,94,42,0)', boxShadow: `inset 1px 1px 0 ${ink}, inset -1px 0 0 ${ink}`, duration: 0.6, ease: 'power1.inOut' }, 't-f0')
     .to($('.btn-ghost', btns), { borderTopColor: ink, duration: 0.6, ease: 'power1.inOut' }, 't-f0')
     .to(inners(btns), { yPercent: -110, duration: 0.5, ease: 'power2.in' }, 't-f0')
     .to($$('.arrow', btns), { opacity: 0, duration: 0.3 }, 't-f0')
-    // header takes the Features layout (logo 464, links 160, CTA without border/tick)
+    .set(btns, { autoAlpha: 0 }, 't-f0+=0.6')
+    .set(featTabs, { autoAlpha: 1 }, 't-f0+=0.6')
+    .to(featTabs, { left: 157, width: 1267, '--tbi': ink, ease: 'power2.inOut', duration: SPLIT - 0.6 }, 't-f0+=0.6')
+    .to(tabs, { width: (i) => [317.75, 316.75, 316.75, 315.75][i], ease: 'power2.inOut', duration: SPLIT - 0.6 }, 't-f0+=0.6')
     // the header never changes — only its CTA turns orange and loses its tick
     .to(menuCta, { backgroundColor: '#bf5e2a', color: '#f6f6ef', duration: 0.5 }, 't-f0+=0.3')
-    .to(ctaMark, { opacity: 0, duration: 0.4 }, 't-f0+=0.3');
-  tl.addLabel('feat-a'); hold(0.15);
-
-  // ---- F1 → F2 (677:37552): lines open to the card edges, the title slides up from the bottom,
-  //      the two buttons grow into four tab cells ----
-  tl.addLabel('t-fb');
-  tl.set(btns, { autoAlpha: 0 }, 't-fb')
-    .set(featTabs, { autoAlpha: 1 }, 't-fb')
-    .to(fLineL, { left: 155, top: 49, height: 655 }, 't-fb')
-    .to(fLineR, { left: 1267 }, 't-fb')
-    .to(fWin, { clipPath: 'inset(0px 156px 0px 155px)' }, 't-fb')
-    .to([title, media], { x: -515 }, 't-fb')
-    .to(stats, { x: 39 + 515 }, 't-fb')
-    .to(fiHead, { y: 372, duration: 0.9, ease: 'power3.out' }, 't-fb+=0.15')
-    .to(featTabs, { left: 157, width: 1267, '--tbi': ink }, 't-fb')
-    .to(tabs, { width: (i) => [317.75, 316.75, 316.75, 315.75][i] }, 't-fb')
-    .set(hero, { autoAlpha: 0 }, 't-fb+=1')
-    .set(fWin, { clipPath: 'inset(0px 0px 0px 0px)' }, 't-fb+=1');
-  tl.addLabel('feat-b'); hold(0.15);
-
-  // ---- F2 → F3 (677:37577): title settles, the section rises, tab 1 starts filling black ----
-  tl.addLabel('t-fc');
-  tl.to(fiHead, { y: 0, duration: 0.9 }, 't-fc')
-    .to(fLineL, { left: 157, duration: 0.9 }, 't-fc')
-    .to([fSec, fTicks], { y: 200, duration: 0.9, ease: 'power3.out' }, 't-fc+=0.1')
-    .to(fTicks, { opacity: 1, duration: 0.4 }, 't-fc+=0.4')
-    .to(fGuides, { scaleY: 1, duration: 0.9, ease: 'power2.out', stagger: 0.08 }, 't-fc')
-    .to(featTabs, { '--tb': '#000', '--tbi': '#000', duration: 0.6 }, 't-fc')
-    .to(tabFills[0], { scaleX: 113 / 316.75, duration: 0.9 }, 't-fc');
-  tl.addLabel('feat-c'); hold(0.1);
-
-  // ---- F3 → F4 (677:37602, Features intro): section closes the gap, tab 1 completes, labels appear ----
-  tl.addLabel('t-fd');
-  tl.to([fSec, fTicks], { y: 0, duration: 0.8 }, 't-fd')
-    .to(tabFills[0], { scaleX: 1, duration: 0.8 }, 't-fd')
-    .to(tabTexts, { opacity: 1, duration: 0.5, stagger: 0.05, ease: 'power1.out' }, 't-fd+=0.35');
+    .to(ctaMark, { opacity: 0, duration: 0.4 }, 't-f0+=0.3')
+    // title rises from the bottom into the opening space and settles (linear = scroll-like)
+    .fromTo(fiHead, { y: 700 }, { y: 0, ease: 'none', duration: 2.2 }, 't-f0+=0.7')
+    // left edge line settles 155 → 157, outer dashed guides draw in
+    .to(fLineL, { left: 157, ease: 'power1.inOut', duration: 0.5 }, 't-f0+=' + SPLIT)
+    .to(fGuides, { scaleY: 1, ease: 'power1.out', duration: 1.0, stagger: 0.08 }, 't-f0+=1.9')
+    // section + card rise right behind the title, ticks ride on its top border
+    .fromTo([fSec, fTicks], { y: 800 }, { y: 0, ease: 'none', duration: 2.2 }, 't-f0+=1.4')
+    .to(fTicks, { opacity: 1, duration: 0.4 }, 't-f0+=2.2')
+    // tab borders darken and tab 1 fills black while the card arrives
+    .to(featTabs, { '--tb': '#000', '--tbi': '#000', duration: 0.6 }, 't-f0+=2.0')
+    .to(tabFills[0], { scaleX: 1, ease: 'power1.inOut', duration: 1.4 }, 't-f0+=2.1')
+    .to(tabTexts, { opacity: 1, duration: 0.5, stagger: 0.05, ease: 'power1.out' }, 't-f0+=3.1');
+  // storyboard frames, for review links (#state=feat-a …): approximate moments of F1–F3 inside the continuous move
+  tl.addLabel('feat-a', 't-f0+=0.55').addLabel('feat-b', 't-f0+=1.7').addLabel('feat-c', 't-f0+=2.85');
   tl.addLabel('feat-intro'); hold(0.7);
 
   // ---- F4 → F5 (677:37627, Tab 1): one vertical slide of the whole column (−238) ----
