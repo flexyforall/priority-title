@@ -82,8 +82,8 @@
   gsap.set([fSec, fTicks], { y: 800 });
   gsap.set(fTicks, { opacity: 0 });
   gsap.set(fGuides, { scaleY: 0, transformOrigin: '50% 0%' });
-  gsap.set(featTabs, { autoAlpha: 0, left: 712, width: 712, '--tb': 'rgba(0,0,0,0.16)', '--tbi': 'rgba(0,0,0,0)' });
-  gsap.set(tabs, { width: (i) => [357, 118.33, 118.33, 118.34][i] });
+  gsap.set(featTabs, { autoAlpha: 0, left: 709, width: 715, '--tb': 'rgba(0,0,0,0.16)', '--tbi': 'rgba(0,0,0,0)' });
+  gsap.set(tabs, { width: (i) => [357.5, 119.17, 119.17, 119.16][i] });
   gsap.set(tabTexts, { opacity: 0 });
   gsap.set(tabFills, { scaleX: 0 });
   fms.forEach((el, i) => gsap.set(el, { autoAlpha: i === 0 ? 1 : 0 }));
@@ -145,7 +145,7 @@
   tl.addLabel('t-h5');
   tl.to(media, { left: 1, top: 542.156 }, 't-h5')
     .to(title, { left: 41, top: 303.5 + 1 }, 't-h5')
-    .to(colLine, { left: 710, top: 48 }, 't-h5')
+    .to(colLine, { left: 709, top: 48 }, 't-h5') // same x as the buttons' left edge
     .to(stats, { y: STAT_Y.D, x: 0 }, 't-h5')
     .to(statEls[0], { opacity: 0.3 }, 't-h5')
     .to(capOf(0), { opacity: 0, duration: 0.45 }, 't-h5')

@@ -53,7 +53,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .menu-cta.is-accent { background: var(--color-background-accent); color: var(--color-text-inverse); }
 
 /* ---------- buttons ---------- */
-.btn-row { position: absolute; right: 0; bottom: 0; width: 712px; height: 80px; display: flex; align-items: flex-start; z-index: 3; }
+.btn-row { position: absolute; right: 0; bottom: 0; width: 715px; height: 80px; /* 3px wider than Figma 712: left edge sits on the centre line (x 709) */ display: flex; align-items: flex-start; z-index: 3; }
 .btn { flex: 1 0 0; min-width: 1px; height: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 0 20px; position: relative; }
 .btn-accent { background: var(--color-background-accent); color: var(--color-text-inverse); }
 .btn-ghost { background: transparent; color: var(--color-text-secondary); border-top: 1.005px solid var(--color-border-strong); } /* texture shows through (638:29384) */
@@ -92,11 +92,11 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .hero-sub { width: 586px; color: var(--color-text-secondary); position: absolute; left: 40px; top: 679px; }
 
 .hero-guides { position: absolute; left: 0; bottom: 0; width: 1424px; height: 302px; pointer-events: none; }
-.hero-guides .vclip { position: absolute; left: 711px; bottom: 81px; width: 2px; height: 28px; overflow: hidden; } /* bottom: 302-221 */
+.hero-guides .vclip { position: absolute; left: 708px; bottom: 81px; width: 2px; height: 28px; overflow: hidden; } /* bottom: 302-221 */
 .hero-guides .vclip .vin { position: absolute; left: 0; bottom: 0; width: 2px; height: 655px; }
 .hero-guides .vclip img { position: absolute; left: 1.5px; top: 0; width: 655px; height: 1px; transform-origin: 0 0; transform: rotate(90deg); }
-.hero-guides .h { left: 712px; top: 192px; width: 712px; height: 0; }
-.scroll-hint { position: absolute; left: 1039px; top: 169px; display: flex; gap: 2px; align-items: center; color: #c5c5bf; font-weight: 500; } /* was black @20% → solid #C5C5BF */
+.hero-guides .h { left: 709px; top: 192px; width: 715px; height: 0; } /* follows the 3px-wider buttons */
+.scroll-hint { position: absolute; left: 1036px; top: 169px; display: flex; gap: 2px; align-items: center; color: #c5c5bf; font-weight: 500; } /* was black @20% → solid #C5C5BF */
 .scroll-hint .ar { width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; }
 .scroll-hint .ar img { width: 14px; height: 14px; transform: rotate(90deg); }
 
@@ -107,10 +107,10 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .stat .num, .stat .cap { flex: 1 0 0; min-width: 1px; }
 
 /* ---------- FEATURES (v2: 677:37473 … 677:38598) ---------- */
-.f-window { position: absolute; inset: 0; background: var(--color-background-primary); clip-path: inset(0px 713px 0px 711px); }
+.f-window { position: absolute; inset: 0; background: var(--color-background-primary); clip-path: inset(0px 714px 0px 710px); }
 .f-line { position: absolute; display: block; width: 1px; background: var(--color-border-default); }
-#fLineL { left: 710px; top: 48px; height: 736px; }
-#fLineR { left: 710px; top: 48px; height: 656px; }
+#fLineL { left: 709px; top: 48px; height: 736px; }
+#fLineR { left: 709px; top: 48px; height: 656px; }
 .f-guide { position: absolute; width: 1px; height: 0; }
 .f-guide img { position: absolute; left: 0; top: 0; height: 1px; transform-origin: 0 0; transform: rotate(90deg); }
 .f-col { position: absolute; left: 0; top: 49px; width: 1424px; height: 655px; overflow: hidden; }
@@ -220,7 +220,7 @@ html:not(.booted) #stage { visibility: hidden; }
 /* scroll guides: final hero look is solid #C5C5BF (Buttons 638:29792) */
 .hero-guides .rot.h .c5 { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity .6s ease; }
 .hero-guides.is-live .rot.h .c5 { opacity: 1; }
-.vline-c5 { position: absolute; left: 712.89px; top: 194px; width: 28px; height: 1px; transform-origin: 0 0; transform: rotate(90deg); opacity: 0; transition: opacity .6s ease; }
+.vline-c5 { position: absolute; left: 709.89px; top: 194px; width: 28px; height: 1px; transform-origin: 0 0; transform: rotate(90deg); opacity: 0; transition: opacity .6s ease; }
 .hero-guides.is-live .vline-c5 { opacity: 1; }
 
 /* texture: above every layer of the stage (loader included); only the orange button paints over it */
