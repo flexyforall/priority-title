@@ -276,7 +276,8 @@
       if (instant) gsap.set(f, { scaleX: 1 });
       else fillTw = gsap.fromTo(f, { scaleX: 0, transformOrigin: '0% 50%' }, { scaleX: 1, duration: 0.8, ease: 'power3.inOut' });
     });
-    const swap = [fText('label'), fText('h3'), fText('body'), fText('link'), fText('r0'), fText('r1'), fText('r2')];
+    // the link animates as one piece (text + arrow)
+    const swap = [fText('label'), fText('h3'), fText('body'), $('.feat-link', fSec), fText('r0'), fText('r1'), fText('r2')];
     const apply = () => {
       fText('label').textContent = d.label;
       fText('h3').textContent = d.h3;
@@ -317,8 +318,10 @@
     curSvc = i;
     svcItems.forEach((t, k) => t.classList.toggle('is-active', k === i));
     $('#svcList').classList.toggle('has-top', i > 0);
-    const copy = $$('[data-s]', services);
-    const apply = () => { copy.forEach(el => (el.textContent = d[el.dataset.s])); };
+    const fields = $$('[data-s]', services);
+    // h3, body and the whole link (text + arrow) move as units
+    const copy = [$('[data-s="h3"]', services), $('[data-s="body"]', services), $('#svcCopy .link-accent')];
+    const apply = () => { fields.forEach(el => (el.textContent = d[el.dataset.s])); };
     if (svcTl) svcTl.kill();
     gsap.killTweensOf(copy);
     if (instant) { apply(); gsap.set(copy, { opacity: 1, y: 0 }); }
