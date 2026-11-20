@@ -231,3 +231,6 @@ html:not(.booted) #stage { visibility: hidden; }
 .ready .btn-row { z-index: 120; }
 .ready .menu { z-index: 115; background-image: url("../assets/hero/texture-stripes-o06.svg"); } /* header above the texture (own phase-locked copy): the orange CTA has no stripes */
 .ready .btn-row .btn-ghost { pointer-events: auto; }
+
+/* Features → Services: the tab bar collapses into one "Title insurance" button before growing into the list */
+.bar-label { position: absolute; left: 40px; top: 30.5px; color: var(--color-text-primary); opacity: 0; pointer-events: none; white-space: nowrap; }

@@ -222,19 +222,47 @@
   tl.addLabel('feat-3'); hold(TAB_ROOM);
   tl.addLabel('feat-4'); hold(TAB_ROOM);
 
-  // ---- Features → Services (538:5633) ----
+  // ---- Features → Services (714:55849 → 722:56498 → 722:55923 → 538:5633) ----
+  // Plain scroll: Services sits right under the Features card and both move up together (one linear move).
+  // Meanwhile the tab bar widens to the full frame, narrows to one "Title insurance" button (473) and grows up
+  // into the four-row Services list; then row 1 fills black.
+  const SCROLL = 2.2;
+  const svcList = $('#svcList'), barLabel = $('.bar-label', featTabs);
+  const ROW0 = 704 - 495;                         // bar top (704) relative to the list top (495)
   tl.addLabel('t-s1');
-  tl.to([fSec, fTicks], { y: -298, opacity: 0, duration: 0.6, ease: 'power2.in' }, 't-s1')
-    .to(featTabs, { y: 82, duration: 0.6, ease: 'power2.in' }, 't-s1')
-    .to([...fGuides, fLineL, fLineR], { opacity: 0, duration: 0.4 }, 't-s1')
-    .set(features, { autoAlpha: 0 }, 't-s1+=0.6')
-    .set(services, { autoAlpha: 1 }, 't-s1+=0.3')
-    .from($$('.svc-col1, .svc-col2, .svc-col3', services), { opacity: 0, duration: 0.4, stagger: 0.06 }, 't-s1+=0.3')
-    .from($$('#svcH2 .line-inner'), { yPercent: 105, stagger: 0.08, duration: 0.6, ease: 'power3.out' }, 't-s1+=0.35')
-    .from(svcItems, { xPercent: -101, stagger: 0.07, duration: 0.6, ease: 'power3.out' }, 't-s1+=0.4')
-    .from($$('.plat-map > *', illus[0]), { opacity: 0, stagger: 0.015, duration: 0.4 }, 't-s1+=0.35')
-    .from($$('[data-layer="parcel"], [data-layer="survey-stakes"], [data-layer="dimension"]', illus[0]), { opacity: 0, y: -24, stagger: 0.1, duration: 0.5, ease: 'power2.out' }, 't-s1+=0.6')
-    .from($('#svcCopy'), { opacity: 0, y: 24, duration: 0.6, ease: 'power3.out' }, 't-s1+=0.45');
+  const yAt = (u) => 704 * (1 - u / SCROLL);    // services offset at time u (linear)
+  tl.set(services, { autoAlpha: 1, y: 704 }, 't-s1')
+    .fromTo(services, { clipPath: `inset(0px 0px ${80 + yAt(0)}px 0px)` }, { clipPath: `inset(0px 0px ${80 + yAt(1.4)}px 0px)`, ease: 'none', duration: 1.4 }, 't-s1')
+    .set(svcList, { autoAlpha: 0 }, 't-s1')
+    .to(services, { y: 0, ease: 'none', duration: SCROLL }, 't-s1')
+    .to([fWin, ...fGuides], { y: -704, ease: 'none', duration: SCROLL }, 't-s1')
+    .to(fTicks, { y: -238 - 704, ease: 'none', duration: SCROLL }, 't-s1')
+    // 1 · bar widens to the full frame (714:55849): active fill and labels go
+    .set(tabFills, { scaleX: 0 }, 't-s1')
+    .to(tabTexts, { opacity: 0, duration: 0.25, ease: 'power1.in' }, 't-s1')
+    .to(featTabs, { left: 0, width: 1424, ease: 'power1.inOut', duration: 0.67 }, 't-s1')
+    .to(tabs, { width: (i) => [356.5, 355.5, 355.5, 356.5][i], ease: 'power1.inOut', duration: 0.67 }, 't-s1')
+    // 2 · narrows to one "Title insurance" button, 473 wide (722:56498)
+    .to(featTabs, { width: 473, ease: 'power1.inOut', duration: 0.73 }, 't-s1+=0.67')
+    .to(tabs, { width: (i) => [473, 0, 0, 0][i], ease: 'power1.inOut', duration: 0.73 }, 't-s1+=0.67')
+    .to(barLabel, { opacity: 1, duration: 0.35, ease: 'power1.out' }, 't-s1+=1.0')
+    // 3 · the button grows up into the four list rows (722:55923)
+    .set(featTabs, { autoAlpha: 0 }, 't-s1+=1.4')
+    .set(services, { clipPath: 'inset(0px 0px 0px 0px)' }, 't-s1+=1.4')
+    .set(svcList, { autoAlpha: 1 }, 't-s1+=1.4')
+    .fromTo(svcList, { clipPath: `inset(${ROW0}px 0px 0px 0px)` }, { clipPath: 'inset(0px 0px 0px 0px)', ease: 'power1.inOut', duration: SCROLL - 1.4 }, 't-s1+=1.4')
+    .fromTo(svcItems, { y: (i) => ROW0 + 4 - 72 * i }, { y: 0, ease: 'power1.inOut', duration: SCROLL - 1.4 }, 't-s1+=1.4')
+    .fromTo(svcItems.slice(1), { opacity: 0 }, { opacity: 1, duration: 0.45, stagger: 0.08, ease: 'power1.out' }, 't-s1+=1.55')
+    .fromTo($('.svc-intro .t-label'), { opacity: 0 }, { opacity: 1, duration: 0.5, ease: 'power1.out' }, 't-s1+=1.55')
+    .fromTo($$('#svcH2 .line-inner'), { yPercent: 105 }, { yPercent: 0, stagger: 0.08, duration: 0.6, ease: 'power3.out' }, 't-s1+=1.6')
+    .fromTo($('#svcCopy'), { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, 't-s1+=1.7')
+    .fromTo($$('[data-layer="parcel"], [data-layer="survey-stakes"], [data-layer="dimension"]', illus[0]), { opacity: 0, y: -24 }, { opacity: 1, y: 0, stagger: 0.1, duration: 0.5, ease: 'power2.out' }, 't-s1+=1.7')
+    .fromTo($$('.svc-t', svcList), { opacity: 0 }, { opacity: 1, duration: 0.45, stagger: 0.05, ease: 'power1.out' }, 't-s1+=' + (SCROLL - 0.1))
+    // 4 · row 1 fills black (538:5633)
+    .fromTo(svcFills[0], { scaleX: 0 }, { scaleX: 1, ease: 'power3.inOut', duration: 0.7 }, 't-s1+=' + SCROLL)
+    .to(svcItems[0], { color: '#f6f6ef', duration: 0.01 }, 't-s1+=' + (SCROLL + 0.33))
+    .set(features, { autoAlpha: 0 }, 't-s1+=' + SCROLL);
+  tl.addLabel('svc-a', 't-s1+=0.67').addLabel('svc-b', 't-s1+=1.4').addLabel('svc-c', 't-s1+=' + SCROLL); // storyboard frames for review links
   tl.addLabel('svc-1'); hold(0.9);
   tl.addLabel('svc-2'); hold(0.9);
   tl.addLabel('svc-3'); hold(0.9);
@@ -300,7 +328,6 @@
   }
 
   let curSvc = 0, svcActTimer = null, svcFillTw = null;
-  gsap.set(svcFills[0], { scaleX: 1 });
   const LAYERS_NEW = { 1: ['parcel-foundation'], 2: ['house', 'tree'], 3: ['building'] };
   function setSvc(i, instant) {
     if (i === curSvc && !instant) return;
@@ -309,6 +336,7 @@
     // same as the Features tabs: deactivate instantly, activate with a black fill from the left
     if (svcActTimer) svcActTimer.kill();
     if (svcFillTw) svcFillTw.kill();
+    gsap.set(svcItems, { clearProps: 'color' });   // the scroll-in sets row 1's colour inline
     svcItems.forEach((t, k) => { if (k !== i) t.classList.remove('is-active'); });
     svcFills.forEach((f, k) => { if (k !== i) gsap.set(f, { scaleX: 0 }); });
     if (instant) { svcItems[i].classList.add('is-active'); gsap.set(svcFills[i], { scaleX: 1 }); }
@@ -602,7 +630,9 @@
     const t = L[lab] !== undefined ? L[lab] : 0;
     tl.time(t);
     alignHeaderTexture();
-    curTab = tabAt(t); curSvc = svcAt(t); setTab(curTab, true, t < L['feat-intro']); setSvc(curSvc, true);
+    curTab = tabAt(t); curSvc = svcAt(t);
+    if (t < L['t-s1']) setTab(curTab, true, t < L['feat-intro']);
+    if (t >= L['svc-1']) setSvc(curSvc, true);
     if (hashState !== 'static' && hashState !== 'loader-hero') { // allow scrolling from here
       setHeight(); addEventListener('resize', setHeight);
       scrollTo(0, t * unitPx()); target = current = t;
