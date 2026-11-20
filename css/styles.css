@@ -37,7 +37,8 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   position: absolute; left: 1px; top: 0; width: 1422px; height: 48px; z-index: 40;
   display: flex; align-items: flex-start;
   border-bottom: 1px solid var(--color-border-default);
-  background: var(--color-background-primary);
+  background: var(--color-background-primary) no-repeat;
+  background-size: 1440px 800px;
 }
 .menu-logo { width: 400px; height: 100%; padding: 0 20px; display: flex; flex-direction: column; justify-content: center; flex: none; }
 .menu-logo img { width: 106px; height: 24px; }
@@ -226,4 +227,5 @@ html:not(.booted) #stage { visibility: hidden; }
 /* texture: above every layer of the stage (loader included); only the orange button paints over it */
 .texture { position: absolute; left: 0; top: 0; width: 1440px; height: 800px; pointer-events: none; z-index: 110; }
 .ready .btn-row { z-index: 120; }
+.ready .menu { z-index: 115; background-image: url("../assets/hero/texture-stripes-o06.svg"); } /* header above the texture (own phase-locked copy): the orange CTA has no stripes */
 .ready .btn-row .btn-ghost { pointer-events: auto; }

@@ -75,7 +75,6 @@
   gsap.set(colLine, { opacity: 0 });
   gsap.set($$('.cap', stats), { opacity: 0 });
   gsap.set('#tlDark', { opacity: 0 });
-  menu.style.left = '0px';
 
   // Features v2 — everything starts hidden below / closed at the centre line
   gsap.set(fiHead, { y: 700 });
@@ -130,7 +129,6 @@
   //      H1 centres, "7 Regions" highlighted ----
   tl.addLabel('t-h4');
   tl.to(frame, { top: 8, height: 784 }, 't-h4')
-    .to(menu, { left: 1, top: 1 }, 't-h4')
     .to(media, { left: 0, top: 543.156, width: 412, height: 240.844 }, 't-h4')
     .to(heroImg, { left: -206.277, top: -55.193, width: 824.557, height: 337.294 }, 't-h4')
     .to(title, { left: 40, top: 304.5 + 1 }, 't-h4')
@@ -185,9 +183,8 @@
     .to(inners(btns), { yPercent: -110, duration: 0.5, ease: 'power2.in' }, 't-f0')
     .to($$('.arrow', btns), { opacity: 0, duration: 0.3 }, 't-f0')
     // header takes the Features layout (logo 464, links 160, CTA without border/tick)
-    .to(menu, { left: 0, top: 0, width: 1424, duration: 0.8 }, 't-f0')
-    .to(menuLogo, { width: 464, duration: 0.8 }, 't-f0')
-    .to(menuCta, { backgroundColor: '#bf5e2a', color: '#f6f6ef', borderLeftColor: 'rgba(0,0,0,0)', duration: 0.5 }, 't-f0+=0.3')
+    // the header never changes — only its CTA turns orange and loses its tick
+    .to(menuCta, { backgroundColor: '#bf5e2a', color: '#f6f6ef', duration: 0.5 }, 't-f0+=0.3')
     .to(ctaMark, { opacity: 0, duration: 0.4 }, 't-f0+=0.3');
   tl.addLabel('feat-a'); hold(0.15);
 
@@ -242,10 +239,6 @@
     .to(featTabs, { y: 82, duration: 0.6, ease: 'power2.in' }, 't-s1')
     .to([...fGuides, fLineL, fLineR], { opacity: 0, duration: 0.4 }, 't-s1')
     .set(features, { autoAlpha: 0 }, 't-s1+=0.6')
-    .to(menu, { left: 1, width: 1423, duration: 0.6 }, 't-s1')
-    .to(menuLogo, { width: 400, duration: 0.6 }, 't-s1')
-    .to(menuCta, { borderLeftColor: 'rgba(0,0,0,0.16)', duration: 0.4 }, 't-s1')
-    .to(ctaMark, { opacity: 1, duration: 0.4 }, 't-s1')
     .set(services, { autoAlpha: 1 }, 't-s1+=0.3')
     .from($$('.svc-col1, .svc-col2, .svc-col3', services), { opacity: 0, duration: 0.4, stagger: 0.06 }, 't-s1+=0.3')
     .from($$('#svcH2 .line-inner'), { yPercent: 105, stagger: 0.08, duration: 0.6, ease: 'power3.out' }, 't-s1+=0.35')
@@ -384,10 +377,17 @@
   function setHeight() { scroller.style.height = `${TOTAL * unitPx() + innerHeight}px`; }
   let target = 0, current = 0, running = false;
   function onScroll() { target = Math.min(TOTAL, Math.max(0, scrollY / unitPx())); if (!running) { running = true; requestAnimationFrame(tick); } }
+  // the header sits above the texture, so it carries its own copy, phase-locked to the stage
+  // (the frame moves 10 → 8px during the hero, so the offset is recomputed)
+  function alignHeaderTexture() {
+    menu.style.backgroundPosition = `${-(8 + 1)}px ${-(gsap.getProperty(frame, 'top'))}px`; // menu sits at (1,0) in the frame
+  }
+  alignHeaderTexture();
   function tick() {
     current += (target - current) * 0.11;
     if (Math.abs(target - current) < 0.0005) current = target;
     tl.time(current);
+    alignHeaderTexture();
     syncDiscrete(current);
     if (current !== target) requestAnimationFrame(tick); else running = false;
   }
@@ -586,6 +586,7 @@
     if (lab === 'loader-hero') { skeleton(); gsap.set(frame, { outlineColor: 'rgba(0,0,0,1)' }); }
     const t = L[lab] !== undefined ? L[lab] : 0;
     tl.time(t);
+    alignHeaderTexture();
     curTab = tabAt(t); curSvc = svcAt(t); setTab(curTab, true, t < L['feat-intro']); setSvc(curSvc, true);
     if (hashState !== 'static' && hashState !== 'loader-hero') { // allow scrolling from here
       setHeight(); addEventListener('resize', setHeight);
