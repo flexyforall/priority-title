@@ -234,3 +234,6 @@ html:not(.booted) #stage { visibility: hidden; }
 
 /* Features → Services: the tab bar collapses into one "Title insurance" button before growing into the list */
 .bar-label { position: absolute; left: 40px; top: 30.5px; color: var(--color-text-primary); opacity: 0; pointer-events: none; white-space: nowrap; }
+
+/* divider between Features and Services while Services scrolls in (at rest it sits under the header) */
+.scene-services::before { content: ""; position: absolute; left: 0; right: 0; top: -1px; height: 1px; background: var(--color-border-default); z-index: 3; }

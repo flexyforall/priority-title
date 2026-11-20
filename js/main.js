@@ -240,6 +240,9 @@
     // 1 · bar widens to the full frame (714:55849): active fill and labels go
     .set(tabFills, { scaleX: 0 }, 't-s1')
     .to(tabTexts, { opacity: 0, duration: 0.25, ease: 'power1.in' }, 't-s1')
+    // borders go semi-transparent (as in Figma) and the bar gets its own right edge while it narrows
+    .to(featTabs, { '--tb': ink, '--tbi': ink, duration: 0.25, ease: 'power1.out' }, 't-s1')
+    .fromTo(featTabs, { boxShadow: 'inset -1px 0 0 rgba(0,0,0,0)' }, { boxShadow: `inset -1px 0 0 ${ink}`, duration: 0.25 }, 't-s1')
     .to(featTabs, { left: 0, width: 1424, ease: 'power1.inOut', duration: 0.67 }, 't-s1')
     .to(tabs, { width: (i) => [356.5, 355.5, 355.5, 356.5][i], ease: 'power1.inOut', duration: 0.67 }, 't-s1')
     // 2 · narrows to one "Title insurance" button, 473 wide (722:56498)
