@@ -279,10 +279,11 @@
     .to({}, { duration: 0.4 })
     .set(features, { autoAlpha: 0 }, 't-s1+=' + SCROLL);
   tl.addLabel('svc-a', 't-s1+=0.67').addLabel('svc-b', 't-s1+=1.4').addLabel('svc-c', 't-s1+=' + SCROLL); // storyboard frames for review links
-  tl.addLabel('svc-1'); hold(0.9);
-  tl.addLabel('svc-2'); hold(0.9);
-  tl.addLabel('svc-3'); hold(0.9);
-  tl.addLabel('svc-4'); hold(0.6);
+  // same calm stops as the Features cards: TAB_ROOM of scroll per service
+  tl.addLabel('svc-1'); hold(TAB_ROOM);
+  tl.addLabel('svc-2'); hold(TAB_ROOM);
+  tl.addLabel('svc-3'); hold(TAB_ROOM);
+  tl.addLabel('svc-4'); hold(TAB_ROOM / 2);
 
   const L = tl.labels;
   const TOTAL = tl.duration();
@@ -402,7 +403,7 @@
 
   const HALF = 2.2 / 2;
   const tabAt = t => t < L['feat-2'] - HALF ? 0 : t < L['feat-3'] - HALF ? 1 : t < L['feat-4'] - HALF ? 2 : 3;
-  const svcAt = t => t < L['svc-2'] - 0.3 ? 0 : t < L['svc-3'] - 0.3 ? 1 : t < L['svc-4'] - 0.3 ? 2 : 3;
+  const svcAt = t => t < L['svc-2'] - HALF ? 0 : t < L['svc-3'] - HALF ? 1 : t < L['svc-4'] - HALF ? 2 : 3;
   // cards change strictly one step at a time; while a change is playing, further scroll waits for it
   let tabBusy = false, tabHoldUntil = 0;
   function syncTabs(t) {
@@ -457,11 +458,11 @@
   addEventListener('scroll', () => {
     clearTimeout(idleT);
     idleT = setTimeout(() => {
-      const lo = L['feat-1'] - 0.3, hi = L['feat-4'] + HALF;
-      if (target < lo || target > hi) return;
-      const k = Math.max(0, Math.min(3, tabAt(target)));
-      const goal = L['feat-' + (k + 1)];
-      if (Math.abs(target - goal) > 0.04) scrollTo({ top: goal * unitPx() + 2, behavior: 'smooth' });
+      // soft snap to the nearest Features card or Services item once the scroll stops
+      let goal = null;
+      if (target >= L['feat-1'] - 0.3 && target <= L['feat-4'] + HALF) goal = L['feat-' + (tabAt(target) + 1)];
+      else if (target >= L['svc-1'] - 0.3) goal = L['svc-' + (svcAt(target) + 1)];
+      if (goal !== null && Math.abs(target - goal) > 0.04) scrollTo({ top: goal * unitPx() + 2, behavior: 'smooth' });
     }, 260);
   }, { passive: true });
   svcItems.forEach((t, k) => t.addEventListener('click', () => {
