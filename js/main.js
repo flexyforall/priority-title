@@ -229,11 +229,12 @@
   // ---- F4 → F5 (677:37627, Tab 1): one vertical slide of the whole column (−238) ----
   tl.addLabel('t-f1');
   tl.to([fiHead, fSec, fTicks], { y: -238, duration: 0.9 }, 't-f1');
-  tl.addLabel('feat-1'); hold(0.9);
+  const TAB_ROOM = 2.2; // scroll room per audience card (×0.9 viewport) — every card gets a calm stop
+  tl.addLabel('feat-1'); hold(TAB_ROOM);
   // tabs 2–4 are discrete steps (see TABS below) — each gets scroll room
-  tl.addLabel('feat-2'); hold(0.9);
-  tl.addLabel('feat-3'); hold(0.9);
-  tl.addLabel('feat-4'); hold(0.9);
+  tl.addLabel('feat-2'); hold(TAB_ROOM);
+  tl.addLabel('feat-3'); hold(TAB_ROOM);
+  tl.addLabel('feat-4'); hold(TAB_ROOM);
 
   // ---- Features → Services (538:5633) ----
   tl.addLabel('t-s1');
@@ -265,13 +266,14 @@
      ====================================================================== */
   const fText = k => $(`[data-f="${k}"]`, fSec);
   let curTab = 0, tabTl = null, svcTl = null;
+  const TAB_SWITCH = 1.15; // s — a card change plays fully before the next one may start
   function setTab(i, instant, skipFill) {
     if (i === curTab && !instant) return;
     const d = TABS[i], prevImg = TABS[curTab].img;
     curTab = i;
     tabs.forEach((t, k) => t.classList.toggle('is-active', k === i));
     // (no killTweensOf here: tab 1's fill is also driven by the scroll timeline)
-    if (!(instant && skipFill)) tabFills.forEach((f, k) => { if (instant) gsap.set(f, { scaleX: k === i ? 1 : 0 }); else gsap.to(f, { scaleX: k === i ? 1 : 0, transformOrigin: k === i ? '0% 50%' : '100% 50%', duration: 0.55, ease: 'power3.inOut' }); });
+    if (!(instant && skipFill)) tabFills.forEach((f, k) => { if (instant) gsap.set(f, { scaleX: k === i ? 1 : 0 }); else gsap.to(f, { scaleX: k === i ? 1 : 0, transformOrigin: k === i ? '0% 50%' : '100% 50%', duration: 0.8, ease: 'power3.inOut' }); });
     const swap = [fText('label'), fText('h3'), fText('body'), fText('link'), fText('r0'), fText('r1'), fText('r2')];
     const apply = () => {
       fText('label').textContent = d.label;
@@ -285,9 +287,9 @@
     if (instant) { apply(); gsap.set(swap, { opacity: 1, y: 0 }); }
     else {
       tabTl = gsap.timeline()
-        .to(swap, { opacity: 0, y: -10, duration: 0.22, stagger: 0.02, ease: 'power2.in' })
+        .to(swap, { opacity: 0, y: -10, duration: 0.35, stagger: 0.03, ease: 'power2.in' })
         .add(apply)
-        .fromTo(swap, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.04, ease: 'power3.out' });
+        .fromTo(swap, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.8, stagger: 0.06, ease: 'power3.out' });
     }
     // image
     fms.forEach(el => {
@@ -296,11 +298,11 @@
       if (instant) { gsap.set(el, { autoAlpha: on ? 1 : 0, clipPath: 'inset(0% 0% 0% 0%)' }); return; }
       if (on && k !== prevImg) {
         gsap.set(el, { zIndex: 2, autoAlpha: 1 });
-        gsap.fromTo(el, { clipPath: 'inset(100% 0% 0% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.9, ease: 'power3.inOut' });
-        gsap.fromTo(el.querySelectorAll('img'), { scale: 1.08 }, { scale: 1, duration: 1.2, ease: 'power3.out' });
+        gsap.fromTo(el, { clipPath: 'inset(100% 0% 0% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.3, ease: 'power3.inOut' });
+        gsap.fromTo(el.querySelectorAll('img'), { scale: 1.08 }, { scale: 1, duration: 1.7, ease: 'power3.out' });
       } else if (!on) {
         gsap.set(el, { zIndex: 1 });
-        gsap.to(el, { autoAlpha: 0, duration: 0.01, delay: k === prevImg ? 0.9 : 0 });
+        gsap.to(el, { autoAlpha: 0, duration: 0.01, delay: k === prevImg ? 1.3 : 0 });
       }
     });
   }
@@ -350,9 +352,20 @@
     });
   }
 
-  const tabAt = t => t < L['feat-2'] - 0.3 ? 0 : t < L['feat-3'] - 0.3 ? 1 : t < L['feat-4'] - 0.3 ? 2 : 3;
+  const HALF = 2.2 / 2;
+  const tabAt = t => t < L['feat-2'] - HALF ? 0 : t < L['feat-3'] - HALF ? 1 : t < L['feat-4'] - HALF ? 2 : 3;
   const svcAt = t => t < L['svc-2'] - 0.3 ? 0 : t < L['svc-3'] - 0.3 ? 1 : t < L['svc-4'] - 0.3 ? 2 : 3;
-  function syncDiscrete(t) { setTab(tabAt(t)); setSvc(svcAt(t)); }
+  // cards change strictly one step at a time; while a change is playing, further scroll waits for it
+  let tabBusy = false, tabHoldUntil = 0;
+  function syncTabs(t) {
+    if (tabBusy || performance.now() < tabHoldUntil) return;
+    const want = tabAt(t);
+    if (want === curTab) return;
+    setTab(curTab + Math.sign(want - curTab));
+    tabBusy = true;
+    gsap.delayedCall(TAB_SWITCH, () => { tabBusy = false; syncTabs(current); });
+  }
+  function syncDiscrete(t) { syncTabs(t); setSvc(svcAt(t)); }
 
   /* ======================================================================
      SCROLL → TIMELINE (smoothed)
@@ -371,7 +384,22 @@
   }
   function scrollToLabel(name) { scrollTo({ top: L[name] * unitPx() + 2, behavior: 'smooth' }); }
 
-  tabs.forEach((t, k) => t.addEventListener('click', () => scrollToLabel('feat-' + (k + 1))));
+  tabs.forEach((t, k) => t.addEventListener('click', () => {
+    tabHoldUntil = performance.now() + 1400;
+    setTab(k);
+    scrollToLabel('feat-' + (k + 1));
+  }));
+  let idleT = null;
+  addEventListener('scroll', () => {
+    clearTimeout(idleT);
+    idleT = setTimeout(() => {
+      const lo = L['feat-1'] - 0.3, hi = L['feat-4'] + HALF;
+      if (target < lo || target > hi) return;
+      const k = Math.max(0, Math.min(3, tabAt(target)));
+      const goal = L['feat-' + (k + 1)];
+      if (Math.abs(target - goal) > 0.04) scrollTo({ top: goal * unitPx() + 2, behavior: 'smooth' });
+    }, 260);
+  }, { passive: true });
   svcItems.forEach((t, k) => t.addEventListener('click', () => scrollToLabel('svc-' + (k + 1))));
   $$('.menu-cell[href="#services"]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); scrollToLabel('svc-1'); }));
   $$('a[href="#"]').forEach(a => a.addEventListener('click', e => e.preventDefault()));
