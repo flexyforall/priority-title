@@ -126,7 +126,7 @@
   //      and stops on the button top (y 703); progress overlay and scroll guides fade out ----
   tl.addLabel('t-h2');
   tl.to(media, { width: 1082 }, 't-h2')
-    .to(heroImg, { left: -199 }, 't-h2')
+    .to(heroImg, { left: -172 }, 't-h2')
     .to(timeline, { opacity: 0, duration: 0.45, ease: 'power1.out' }, 't-h2')
     .to(guides, { opacity: 0, duration: 0.45, ease: 'power1.out' }, 't-h2')
     .fromTo(colLine, { left: 1424, top: 47, height: 656, opacity: 0 }, { left: 1081, top: 47, height: 656, opacity: 1 }, 't-h2');
@@ -135,7 +135,7 @@
   // ---- A → B (612:6755): photo shrinks to 542×317 at 150,223; stats column rises, subtitle fades ----
   tl.addLabel('t-h3');
   tl.to(media, { left: 150, top: 223, width: 542.275, height: 317 }, 't-h3')
-    .to(heroImg, { left: -271.504, top: -72.646, width: 1085.285, height: 443.947 }, 't-h3')
+    .to(heroImg, { left: -251.692, top: -101.264, width: 1045.665, height: 464.495 }, 't-h3')
     .to(sub, { opacity: 0, duration: 0.5 }, 't-h3')
     .to(colLine, { left: 709, top: 48 }, 't-h3')
     // the line only grows past the buttons once it is left of them (x < 712) — never shows through "Find a location"
@@ -149,7 +149,7 @@
   tl.addLabel('t-h4');
   tl.to(frame, { top: 8, height: 784 }, 't-h4')
     .to(media, { left: 0, top: 543.156, width: 412, height: 240.844 }, 't-h4')
-    .to(heroImg, { left: -206.277, top: -55.193, width: 824.557, height: 337.294 }, 't-h4')
+    .to(heroImg, { left: -191.225, top: -76.936, width: 794.452, height: 352.903 }, 't-h4')
     .to(title, { left: 40, top: 304.5 + 1 }, 't-h4')
     .to(colLine, { left: 709, top: 49, height: 735 }, 't-h4')
     .to(stats, { y: STAT_Y.C, x: 1 }, 't-h4')
@@ -197,7 +197,7 @@
     .to(stats, { x: 1267 - 709, ease: 'power2.inOut', duration: SPLIT }, 't-f0')
     .to(title, { top: 304 + 1, ease: 'power1.inOut', duration: 0.9 }, 't-f0')
     .to(media, { left: -39, top: 592, width: 328.445, height: 192, ease: 'power1.inOut', duration: 0.9 }, 't-f0')
-    .to(heroImg, { left: -164.445, top: -44, width: 657.334, height: 268.889, ease: 'power1.inOut', duration: 0.9 }, 't-f0')
+    .to(heroImg, { left: -152.445, top: -61.333, width: 633.334, height: 281.334, ease: 'power1.inOut', duration: 0.9 }, 't-f0')
     .to(stats, { y: STAT_Y.E - 199, ease: 'none', duration: 1.2 }, 't-f0')
     .to(statEls[2], { opacity: 0.3, duration: 0.6 }, 't-f0')
     .to(capOf(2), { opacity: 0, duration: 0.4 }, 't-f0')
@@ -640,7 +640,7 @@
      BOOT
      ====================================================================== */
   const ready = document.fonts ? document.fonts.ready : Promise.resolve();
-  const imgs = ['assets/hero/hero-photo-full.webp', 'assets/loader/letter-p-grey-v2.svg', 'assets/loader/letter-p-orange-v2.svg', 'assets/loader/guides-perspective-v2-loader1.svg', 'assets/hero/texture-stripes-o06.svg']
+  const imgs = ['assets/hero/hero-photo-v2.webp', 'assets/loader/letter-p-grey-v2.svg', 'assets/loader/letter-p-orange-v2.svg', 'assets/loader/guides-perspective-v2-loader1.svg', 'assets/hero/texture-stripes-o06.svg']
     .map(src => new Promise(res => { const i = new Image(); i.onload = i.onerror = res; i.src = src; }));
 
   if (hashState) {
