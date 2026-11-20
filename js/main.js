@@ -565,7 +565,7 @@
      BOOT
      ====================================================================== */
   const ready = document.fonts ? document.fonts.ready : Promise.resolve();
-  const imgs = ['assets/hero/hero-photo-full.png', 'assets/loader/letter-p-grey-v2.svg', 'assets/loader/letter-p-orange-v2.svg', 'assets/loader/guides-perspective-v2-loader1.svg', 'assets/hero/texture-stripes-o06.svg']
+  const imgs = ['assets/hero/hero-photo-full.webp', 'assets/loader/letter-p-grey-v2.svg', 'assets/loader/letter-p-orange-v2.svg', 'assets/loader/guides-perspective-v2-loader1.svg', 'assets/hero/texture-stripes-o06.svg']
     .map(src => new Promise(res => { const i = new Image(); i.onload = i.onerror = res; i.src = src; }));
 
   if (hashState) {
@@ -589,5 +589,7 @@
     scrollTo(0, 0);
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     Promise.all([ready, ...imgs]).then(() => setTimeout(runLoader, 150));
+    // decode the Features photos ahead of time (off the main thread) so the first card reveal never waits on them
+    addEventListener('load', () => setTimeout(() => $$('.feat-media img').forEach(i => i.decode && i.decode().catch(() => {})), 500));
   }
 })();
