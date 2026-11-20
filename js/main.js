@@ -64,7 +64,7 @@
   const revealTexts = [...menuTexts.filter(e => e.tagName !== 'IMG'), ...btnTexts.filter(e => !e.classList.contains('arrow')), $('#scrollHint > span')];
   revealTexts.forEach(maskify);
   const inners = el => $$('.line-inner', el);
-  const svcItems = $$('.svc-item'), illus = $$('.svc-illu');
+  const svcItems = $$('.svc-item'), svcFills = $$('.svc-fill'), illus = $$('.svc-illu');
 
   /* ======================================================================
      INITIAL (pre-scroll) STATES
@@ -299,13 +299,23 @@
     });
   }
 
-  let curSvc = 0;
+  let curSvc = 0, svcActTimer = null, svcFillTw = null;
+  gsap.set(svcFills[0], { scaleX: 1 });
   const LAYERS_NEW = { 1: ['parcel-foundation'], 2: ['house', 'tree'], 3: ['building'] };
   function setSvc(i, instant) {
     if (i === curSvc && !instant) return;
     const d = SERVICES[i], prev = curSvc;
     curSvc = i;
-    svcItems.forEach((t, k) => t.classList.toggle('is-active', k === i));
+    // same as the Features tabs: deactivate instantly, activate with a black fill from the left
+    if (svcActTimer) svcActTimer.kill();
+    if (svcFillTw) svcFillTw.kill();
+    svcItems.forEach((t, k) => { if (k !== i) t.classList.remove('is-active'); });
+    svcFills.forEach((f, k) => { if (k !== i) gsap.set(f, { scaleX: 0 }); });
+    if (instant) { svcItems[i].classList.add('is-active'); gsap.set(svcFills[i], { scaleX: 1 }); }
+    else {
+      svcActTimer = gsap.delayedCall(0.38, () => svcItems[i].classList.add('is-active'));
+      svcFillTw = gsap.fromTo(svcFills[i], { scaleX: 0, transformOrigin: '0% 50%' }, { scaleX: 1, duration: 0.8, ease: 'power3.inOut' });
+    }
     $('#svcList').classList.toggle('has-top', i > 0);
     const fields = $$('[data-s]', services);
     // h3, body and the whole link (text + arrow) move as units
@@ -359,7 +369,16 @@
     tabBusy = true;
     gsap.delayedCall(TAB_SWITCH, () => { tabBusy = false; syncTabs(current); });
   }
-  function syncDiscrete(t) { syncTabs(t); setSvc(svcAt(t)); }
+  let svcBusy = false, svcHoldUntil = 0;
+  function syncSvc(t) {
+    if (svcBusy || performance.now() < svcHoldUntil) return;
+    const want = svcAt(t);
+    if (want === curSvc) return;
+    setSvc(curSvc + Math.sign(want - curSvc));
+    svcBusy = true;
+    gsap.delayedCall(TAB_SWITCH, () => { svcBusy = false; syncSvc(current); });
+  }
+  function syncDiscrete(t) { syncTabs(t); syncSvc(t); }
 
   /* ======================================================================
      SCROLL → TIMELINE (smoothed)
@@ -401,7 +420,11 @@
       if (Math.abs(target - goal) > 0.04) scrollTo({ top: goal * unitPx() + 2, behavior: 'smooth' });
     }, 260);
   }, { passive: true });
-  svcItems.forEach((t, k) => t.addEventListener('click', () => scrollToLabel('svc-' + (k + 1))));
+  svcItems.forEach((t, k) => t.addEventListener('click', () => {
+    svcHoldUntil = performance.now() + 1400;
+    setSvc(k);
+    scrollToLabel('svc-' + (k + 1));
+  }));
   $$('.menu-cell[href="#services"]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); scrollToLabel('svc-1'); }));
   $$('a[href="#"]').forEach(a => a.addEventListener('click', e => e.preventDefault()));
   addEventListener('keydown', e => {

@@ -177,12 +177,14 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .svc-intro .t-h2 { color: var(--color-text-primary); }
 .svc-list { position: absolute; left: 0; top: 495px; width: 473px; border-right: 1px solid var(--color-border-strong); display: flex; flex-direction: column; }
 .svc-item { height: 72px; display: flex; align-items: center; padding: 0 40px; width: 100%;
-  background: var(--color-background-primary); color: var(--color-text-secondary); border-top: 1px solid var(--color-border-strong);
-  transition: background-color .4s ease, color .4s ease; }
+  position: relative; background: var(--color-background-primary); color: var(--color-text-secondary); border-top: 1px solid var(--color-border-strong); }
+/* active state = black fill sweeping in from the left (same as the Features tabs); deactivation is instant */
+.svc-fill { position: absolute; inset: 0; background: var(--color-background-inverse); transform: scaleX(0); transform-origin: 0 50%; }
+.svc-t { position: relative; }
 .svc-item:first-child { border-top: 0; }
 .svc-list.has-top .svc-item:first-child { border-top: 1px solid var(--color-border-strong); } /* states 2–4 */
-.svc-item.is-active { background: var(--color-background-inverse); color: var(--color-text-inverse); }
-.svc-item:not(.is-active):hover { background: rgba(0, 0, 0, 0.04); }
+.svc-item.is-active { color: var(--color-text-inverse); }
+.svc-item:not(.is-active):hover .svc-t { opacity: .6; }
 .svc-col2 { position: relative; width: 474.5px; flex: none; height: 783px; overflow: hidden; }
 .svc-col2::after { content: ""; position: absolute; top: 0; bottom: 0; right: 0; width: 1px; background: var(--color-border-default); z-index: 2; }
 .svc-illus { position: absolute; inset: 0; }
