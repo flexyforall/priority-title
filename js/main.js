@@ -265,15 +265,24 @@
      DISCRETE STEPS (tabs + services) — time-based transitions, scroll-triggered
      ====================================================================== */
   const fText = k => $(`[data-f="${k}"]`, fSec);
-  let curTab = 0, tabTl = null, svcTl = null;
+  let curTab = 0, tabTl = null, svcTl = null, tabActTimer = null, fillTw = null;
   const TAB_SWITCH = 1.15; // s — a card change plays fully before the next one may start
   function setTab(i, instant, skipFill) {
     if (i === curTab && !instant) return;
     const d = TABS[i], prevImg = TABS[curTab].img;
     curTab = i;
-    tabs.forEach((t, k) => t.classList.toggle('is-active', k === i));
-    // (no killTweensOf here: tab 1's fill is also driven by the scroll timeline)
-    if (!(instant && skipFill)) tabFills.forEach((f, k) => { if (instant) gsap.set(f, { scaleX: k === i ? 1 : 0 }); else gsap.to(f, { scaleX: k === i ? 1 : 0, transformOrigin: k === i ? '0% 50%' : '100% 50%', duration: 0.8, ease: 'power3.inOut' }); });
+    // deactivating is instant (no effect); activating fills black from the left and the label turns white
+    // when the fill reaches it. (no killTweensOf on fills: tab 1's fill is also driven by the scroll timeline)
+    if (tabActTimer) tabActTimer.kill();
+    if (fillTw) fillTw.kill();
+    tabs.forEach((t, k) => { if (k !== i) t.classList.remove('is-active'); });
+    if (instant) tabs[i].classList.add('is-active');
+    else tabActTimer = gsap.delayedCall(0.38, () => tabs[i].classList.add('is-active'));
+    if (!(instant && skipFill)) tabFills.forEach((f, k) => {
+      if (k !== i) { gsap.set(f, { scaleX: 0, overwrite: false }); return; }
+      if (instant) gsap.set(f, { scaleX: 1 });
+      else fillTw = gsap.fromTo(f, { scaleX: 0, transformOrigin: '0% 50%' }, { scaleX: 1, duration: 0.8, ease: 'power3.inOut' });
+    });
     const swap = [fText('label'), fText('h3'), fText('body'), fText('link'), fText('r0'), fText('r1'), fText('r2')];
     const apply = () => {
       fText('label').textContent = d.label;
