@@ -235,12 +235,12 @@ html:not(.booted) #stage { visibility: hidden; }
 /* divider between Features and Services while Services scrolls in (at rest it sits under the header) */
 .scene-services::before { content: ""; position: absolute; left: 0; right: 0; top: -1px; height: 1px; background: var(--color-border-default); z-index: 3; }
 
-/* letter-roll hover (header links, CTA buttons, Features tabs, Services list) */
-.rch { display: inline-block; height: 1.2em; overflow: hidden; vertical-align: top; }
-.rch > span { display: block; line-height: 1.2; transition: transform .5s cubic-bezier(.65, 0, .25, 1); transition-delay: calc(var(--i) * 16ms); }
-.menu-cell:hover .rch > span,
-.btn:hover .rch > span,
-.tab:hover .rch > span,
-.svc-item:hover .rch > span { transform: translateY(-100%); }
+/* hover: label slides up out of its mask, a copy slides in from below (same motion as the heading reveals) */
+.rl { display: inline-block; height: 1.2em; overflow: hidden; vertical-align: top; }
+.rl > span { display: block; line-height: 1.2; white-space: nowrap; transition: transform .55s cubic-bezier(.65, 0, .25, 1); }
+.menu-cell:hover .rl > span,
+.btn:hover .rl > span,
+.tab:hover .rl > span,
+.svc-item:hover .rl > span { transform: translateY(-100%); }
 
-.tab-t .rch, .svc-t .rch { position: relative; top: 2px; } /* keeps tab / list labels on their Figma baseline */
+.tab-t .rl, .svc-t .rl { position: relative; top: 2px; } /* keeps tab / list labels on their Figma baseline */

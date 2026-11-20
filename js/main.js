@@ -65,16 +65,14 @@
   revealTexts.forEach(maskify);
   const inners = el => $$('.line-inner', el);
 
-  // letter-roll hover: duplicate every character into a 2-row strip; the strip slides up on hover (CSS)
+  // hover: the whole label slides up out of its mask and a copy slides in from below —
+  // the same masked line motion the headings use when they load (kerning stays intact)
   function rollify(el) {
     if (!el || el.dataset.roll) return;
     const host = el.querySelector('.line-inner') || el;
-    const text = host.textContent;
-    host.setAttribute('aria-label', text);
-    host.innerHTML = [...text].map((c, i) => {
-      const ch = c === ' ' ? '&nbsp;' : c.replace(/&/g, '&amp;').replace(/</g, '&lt;');
-      return `<span class="rch" aria-hidden="true" style="--i:${i}"><span>${ch}</span><span>${ch}</span></span>`;
-    }).join('');
+    const html = host.innerHTML;
+    host.setAttribute('aria-label', host.textContent);
+    host.innerHTML = `<span class="rl" aria-hidden="true"><span>${html}</span><span>${html}</span></span>`;
     el.dataset.roll = '1';
   }
   [...$$('.menu-cell > span', menu), ...$$('.btn > .t-btn-l', btns), ...$$('.tab-t'), ...$$('.svc-t')].forEach(rollify);
