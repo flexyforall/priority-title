@@ -75,6 +75,13 @@
     host.innerHTML = `<span class="rl" aria-hidden="true"><span>${html}</span><span>${html}</span></span>`;
     el.dataset.roll = '1';
   }
+  // labels that carry the hover strip are updated through this (both copies + aria-label)
+  function setLabel(el, text) {
+    if (!el.dataset.roll) { el.textContent = text; return; }
+    el.setAttribute('aria-label', text);
+    $$('.rl > span', el).forEach(sp => (sp.textContent = text));
+  }
+  [...$$('.link-accent [data-f="link"], .link-accent [data-s="link"]')].forEach(rollify);
   [...$$('.menu-cell > span', menu), ...$$('.btn > .t-btn-l', btns), ...$$('.tab-t'), ...$$('.svc-t')].forEach(rollify);
   const svcItems = $$('.svc-item'), svcFills = $$('.svc-fill'), illus = $$('.svc-illu');
 
@@ -316,7 +323,7 @@
       fText('label').textContent = d.label;
       fText('h3').textContent = d.h3;
       fText('body').textContent = d.body;
-      fText('link').textContent = d.link;
+      setLabel(fText('link'), d.link);
       d.rows.forEach((r, k) => (fText('r' + k).textContent = r));
     };
     if (tabTl) tabTl.kill();
@@ -365,7 +372,7 @@
     const fields = $$('[data-s]', services);
     // h3, body and the whole link (text + arrow) move as units
     const copy = [$('[data-s="h3"]', services), $('[data-s="body"]', services), $('#svcCopy .link-accent')];
-    const apply = () => { fields.forEach(el => (el.textContent = d[el.dataset.s])); };
+    const apply = () => { fields.forEach(el => setLabel(el, d[el.dataset.s])); };
     if (svcTl) svcTl.kill();
     gsap.killTweensOf(copy);
     if (instant) { apply(); gsap.set(copy, { opacity: 1, y: 0 }); }

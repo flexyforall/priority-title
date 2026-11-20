@@ -241,6 +241,8 @@ html:not(.booted) #stage { visibility: hidden; }
 .menu-cell:hover .rl > span,
 .btn:hover .rl > span,
 .tab:hover .rl > span,
-.svc-item:hover .rl > span { transform: translateY(-100%); }
+.svc-item:hover .rl > span,
+.link-accent:hover .rl > span { transform: translateY(-100%); }
 
 .tab-t .rl, .svc-t .rl { position: relative; top: 2px; } /* keeps tab / list labels on their Figma baseline */
+.link-accent .rl { position: relative; top: 1px; } /* keeps the link text on its Figma baseline */
