@@ -20,15 +20,15 @@
 
   /* ---------------- content ---------------- */
   const TABS = [
-    { label: 'Real estate agents', h3: 'Keep every transaction\nmoving with confidence',
+    { label: 'Real estate agents', h3: 'Keep every transaction\nmoving with confidence.',
       body: 'Get reliable title and escrow support from contract to closing. Our team keeps your clients’ transactions on track.',
       link: 'Explore services for agents', rows: ['Open title orders quickly', 'Access property data and reports', 'Get net sheets and closing estimates'], img: 0 },
-    { label: 'Buyers & sellers', h3: 'Close on your next home\nwith total clarity',
+    { label: 'Buyers & sellers', h3: 'Close on your next home\nwith total clarity.',
       body: 'Clear guidance on title, escrow, and closing costs at every step. We confirm a clean title and keep your funds safe until closing.',
       link: 'Explore services for buyers & sellers', rows: ['Estimate costs with our mortgage calculator', 'Check your Prop 19 tax savings', 'Stay protected from wire fraud'], img: 1 },
-    { label: 'Lenders', h3: 'Fund every loan with\nconfidence, on schedule',
+    { label: 'Lenders', h3: 'Fund every loan with\nconfidence, on schedule.',
       body: 'Accurate title work and secure escrow keep your loans compliant and your closings on time, from residential to commercial.',
-      link: 'Explore services for lenders', rows: ['Open title orders online, 24/7', 'Residential and commercial coverage', 'Service in all 58 California counties'], img: 1, wide: true },
+      link: 'Explore services for lenders', rows: ['Open title orders online, 24/7', 'Residential and commercial coverage', 'Service in all 58 California counties'], img: 2 },
     { label: 'Brokers', h3: 'Support your whole\nbrokerage team at any scale',
       body: 'One title and escrow partner for every agent in your office, with local teams across California.',
       link: 'Explore services for brokers', rows: ['Local offices from San Diego to Sacramento', 'One team for residential and commercial files', 'Wire fraud protection on every transaction'], img: 3 },
@@ -47,9 +47,23 @@
   const title = $('#heroTitle'), sub = $('#heroSub'), timeline = $('#heroTimeline');
   const stats = $('#heroStats'), statEls = $$('.stat', stats);
   const colLine = $('#heroColLine'), sep = $('#heroSep'), guides = $('#heroGuides'), btns = $('#heroBtns');
-  const fiHead = $('#fiHead'), featArea = $('#featArea'), featTabs = $('#featTabs');
-  const fgIntro = $('#fgIntro'), fgTabs = $('#fgTabs');
-  const fms = $$('.fm'), tabs = $$('.tab');
+  const fiHead = $('#fiHead'), fSec = $('#fSec'), featTabs = $('#featTabs'), fWin = $('#fWin');
+  const fLineL = $('#fLineL'), fLineR = $('#fLineR'), fGuides = $$('.f-guide'), fTicks = $('#fTicks');
+  const fms = $$('.fm'), tabs = $$('.tab'), tabFills = $$('.tab-fill'), tabTexts = $$('.tab-t');
+  const menuLogo = $('.menu-logo'), ctaMark = $('.mark', menuCta);
+
+  const menuTexts = $$('.menu-cell > span, .menu-logo img', menu);
+  const btnAccent = $('.btn-accent', btns);
+  const btnTexts = $$('.btn > *', btns);
+  const vline = $('#heroVLine');
+  // masked line reveal helpers (reference: text slides up line by line inside a mask)
+  function maskify(el) {
+    if (el.querySelector('.line-mask')) return;
+    el.innerHTML = `<span class="line-mask"><span class="line-inner">${el.innerHTML}</span></span>`;
+  }
+  const revealTexts = [...menuTexts.filter(e => e.tagName !== 'IMG'), ...btnTexts.filter(e => !e.classList.contains('arrow')), $('#scrollHint > span')];
+  revealTexts.forEach(maskify);
+  const inners = el => $$('.line-inner', el);
   const svcItems = $$('.svc-item'), illus = $$('.svc-illu');
 
   /* ======================================================================
@@ -63,17 +77,15 @@
   gsap.set('#tlDark', { opacity: 0 });
   menu.style.left = '0px';
 
-  // Features intro state (528:4855)
-  gsap.set(featArea, { top: 331, height: 670 });
-  gsap.set($('.lbl-intro'), { opacity: 1 });
-  gsap.set($('.lbl-tab'), { opacity: 0 });
-  gsap.set($('.feat-label'), { height: 19 });
-  gsap.set($('.h3-dot'), { opacity: 1 });
-  gsap.set($('.feat-link'), { fontSize: 16, letterSpacing: '-0.32px' });
-  gsap.set($('.feat-link .arrow'), { paddingTop: 0 });
-  gsap.set($('.feat-link .arrow img'), { width: 13.7893, height: 13.7893 });
-  gsap.set(featTabs, { width: 1264, bottom: 0 });
-  gsap.set(fgTabs, { opacity: 0 });
+  // Features v2 — everything starts hidden below / closed at the centre line
+  gsap.set(fiHead, { y: 700 });
+  gsap.set([fSec, fTicks], { y: 800 });
+  gsap.set(fTicks, { opacity: 0 });
+  gsap.set(fGuides, { scaleY: 0, transformOrigin: '50% 0%' });
+  gsap.set(featTabs, { autoAlpha: 0, left: 712, width: 712, '--tb': 'rgba(0,0,0,0.16)', '--tbi': 'rgba(0,0,0,0)' });
+  gsap.set(tabs, { width: (i) => [357, 118.33, 118.33, 118.34][i] });
+  gsap.set(tabTexts, { opacity: 0 });
+  gsap.set(tabFills, { scaleX: 0 });
   fms.forEach((el, i) => gsap.set(el, { autoAlpha: i === 0 ? 1 : 0 }));
   illus.forEach((el, i) => gsap.set(el, { autoAlpha: i === 0 ? 1 : 0 }));
 
@@ -151,39 +163,72 @@
     .to(capOf(2), { opacity: 1, duration: 0.6 }, 't-h6+=0.4');
   tl.addLabel('hero-6'); hold(0.8);
 
-  // ---- Hero → Features intro (528:4855) ----
+  // ---- hero-6 → F1 (677:37473): the centre line doubles and the two halves open from the middle ----
+  const ink = 'rgba(0,0,0,0.16)';
   tl.addLabel('t-f0');
-  tl.to(stats, { y: '-=340', opacity: 0, duration: 0.8, ease: 'power2.in' }, 't-f0')
-    .to(title, { y: -120, opacity: 0, duration: 0.7, ease: 'power2.in' }, 't-f0')
-    .to(media, { top: 783, height: 0, duration: 0.7, ease: 'power2.in' }, 't-f0')
-    .to(heroImg, { top: -300, duration: 0.7, ease: 'power2.in' }, 't-f0')
-    .to(btns, { y: 82, duration: 0.6, ease: 'power2.in' }, 't-f0')
-    .to(colLine, { scaleY: 0, transformOrigin: '50% 0%', duration: 0.7, ease: 'power2.in' }, 't-f0')
-    .set(hero, { autoAlpha: 0 }, 't-f0+=0.8')
-    .to(menu, { left: 0, top: 0, width: 1424, duration: 0.6 }, 't-f0')
-    .to(menuCta, { backgroundColor: '#bf5e2a', color: '#f6f6ef', duration: 0.5 }, 't-f0+=0.3')
-    .set(features, { autoAlpha: 1 }, 't-f0+=0.45')
-    .from(fiHead.querySelectorAll('.line-inner'), { yPercent: 105, stagger: 0.08, duration: 0.6, ease: 'power3.out' }, 't-f0+=0.6')
-    .from($$('.fi-eyebrow, .fi-lead', fiHead), { opacity: 0, y: 14, duration: 0.5, ease: 'power2.out' }, 't-f0+=0.7')
-    .from(featArea, { y: 470, duration: 0.8, ease: 'power3.out' }, 't-f0+=0.5')
-    .from(featTabs, { y: 82, duration: 0.6, ease: 'power3.out' }, 't-f0+=0.65')
-    .from(fgIntro.children, { scaleY: 0, transformOrigin: '50% 0%', stagger: 0.05, duration: 0.7, ease: 'power2.out' }, 't-f0+=0.55');
+  tl.set(features, { autoAlpha: 1 }, 't-f0')
+    .set(colLine, { opacity: 0 }, 't-f0')
+    .to(fLineL, { left: 670, ease: 'power2.inOut', duration: 0.8 }, 't-f0')
+    .to(fLineR, { left: 752, ease: 'power2.inOut', duration: 0.8 }, 't-f0')
+    .to(fWin, { clipPath: 'inset(0px 671px 0px 670px)', ease: 'power2.inOut', duration: 0.8 }, 't-f0')
+    // left half (H1 + photo) moves with the left line, the photo shrinks ×0.7972 about its bottom-left corner
+    .to(title, { left: 1, top: 304 + 1, ease: 'power2.inOut', duration: 0.8 }, 't-f0')
+    .to(media, { left: -39, top: 592, width: 328.445, height: 192, ease: 'power2.inOut', duration: 0.8 }, 't-f0')
+    .to(heroImg, { left: -164.445, top: -44, width: 657.334, height: 268.889, ease: 'power2.inOut', duration: 0.8 }, 't-f0')
+    // right half (stats) moves with the right line
+    .to(stats, { x: 39, y: STAT_Y.E - 199, ease: 'power2.inOut', duration: 0.8 }, 't-f0')
+    .to(statEls[2], { opacity: 0.3, duration: 0.6 }, 't-f0')
+    .to(capOf(2), { opacity: 0, duration: 0.4 }, 't-f0')
+    // CTA buttons empty out (they become the tab cells)
+    .to(btnAccent, { backgroundColor: 'rgba(191,94,42,0)', boxShadow: `inset 1px 1px 0 ${ink}, inset -1px 0 0 ${ink}`, duration: 0.6, ease: 'power1.inOut' }, 't-f0')
+    .to($('.btn-ghost', btns), { borderTopColor: ink, duration: 0.6, ease: 'power1.inOut' }, 't-f0')
+    .to(inners(btns), { yPercent: -110, duration: 0.5, ease: 'power2.in' }, 't-f0')
+    .to($$('.arrow', btns), { opacity: 0, duration: 0.3 }, 't-f0')
+    // header takes the Features layout (logo 464, links 160, CTA without border/tick)
+    .to(menu, { left: 0, top: 0, width: 1424, duration: 0.8 }, 't-f0')
+    .to(menuLogo, { width: 464, duration: 0.8 }, 't-f0')
+    .to(menuCta, { backgroundColor: '#bf5e2a', color: '#f6f6ef', borderLeftColor: 'rgba(0,0,0,0)', duration: 0.5 }, 't-f0+=0.3')
+    .to(ctaMark, { opacity: 0, duration: 0.4 }, 't-f0+=0.3');
+  tl.addLabel('feat-a'); hold(0.15);
+
+  // ---- F1 → F2 (677:37552): lines open to the card edges, the title slides up from the bottom,
+  //      the two buttons grow into four tab cells ----
+  tl.addLabel('t-fb');
+  tl.set(btns, { autoAlpha: 0 }, 't-fb')
+    .set(featTabs, { autoAlpha: 1 }, 't-fb')
+    .to(fLineL, { left: 155, top: 49, height: 655 }, 't-fb')
+    .to(fLineR, { left: 1267 }, 't-fb')
+    .to(fWin, { clipPath: 'inset(0px 156px 0px 155px)' }, 't-fb')
+    .to([title, media], { x: -515 }, 't-fb')
+    .to(stats, { x: 39 + 515 }, 't-fb')
+    .to(fiHead, { y: 372, duration: 0.9, ease: 'power3.out' }, 't-fb+=0.15')
+    .to(featTabs, { left: 157, width: 1267, '--tbi': ink }, 't-fb')
+    .to(tabs, { width: (i) => [317.75, 316.75, 316.75, 315.75][i] }, 't-fb')
+    .set(hero, { autoAlpha: 0 }, 't-fb+=1')
+    .set(fWin, { clipPath: 'inset(0px 0px 0px 0px)' }, 't-fb+=1');
+  tl.addLabel('feat-b'); hold(0.15);
+
+  // ---- F2 → F3 (677:37577): title settles, the section rises, tab 1 starts filling black ----
+  tl.addLabel('t-fc');
+  tl.to(fiHead, { y: 0, duration: 0.9 }, 't-fc')
+    .to(fLineL, { left: 157, duration: 0.9 }, 't-fc')
+    .to([fSec, fTicks], { y: 200, duration: 0.9, ease: 'power3.out' }, 't-fc+=0.1')
+    .to(fTicks, { opacity: 1, duration: 0.4 }, 't-fc+=0.4')
+    .to(fGuides, { scaleY: 1, duration: 0.9, ease: 'power2.out', stagger: 0.08 }, 't-fc')
+    .to(featTabs, { '--tb': '#000', '--tbi': '#000', duration: 0.6 }, 't-fc')
+    .to(tabFills[0], { scaleX: 113 / 316.75, duration: 0.9 }, 't-fc');
+  tl.addLabel('feat-c'); hold(0.1);
+
+  // ---- F3 → F4 (677:37602, Features intro): section closes the gap, tab 1 completes, labels appear ----
+  tl.addLabel('t-fd');
+  tl.to([fSec, fTicks], { y: 0, duration: 0.8 }, 't-fd')
+    .to(tabFills[0], { scaleX: 1, duration: 0.8 }, 't-fd')
+    .to(tabTexts, { opacity: 1, duration: 0.5, stagger: 0.05, ease: 'power1.out' }, 't-fd+=0.35');
   tl.addLabel('feat-intro'); hold(0.7);
 
-  // ---- Features intro → Tab 1 (532:5127) ----
+  // ---- F4 → F5 (677:37627, Tab 1): one vertical slide of the whole column (−238) ----
   tl.addLabel('t-f1');
-  tl.to(fiHead, { y: -90, opacity: 0, duration: 0.6, ease: 'power2.in' }, 't-f1')
-    .to(featArea, { top: 90, height: 694 }, 't-f1')
-    .to($('.lbl-intro'), { opacity: 0, duration: 0.4 }, 't-f1+=0.2')
-    .to($('.lbl-tab'), { opacity: 1, duration: 0.4 }, 't-f1+=0.5')
-    .to($('.feat-label'), { height: 17 }, 't-f1')
-    .to($('.h3-dot'), { opacity: 0, duration: 0.3 }, 't-f1+=0.3')
-    .to($('.feat-link'), { fontSize: 20, letterSpacing: '-0.4px' }, 't-f1')
-    .to($('.feat-link .arrow'), { paddingTop: 2 }, 't-f1')
-    .to($('.feat-link .arrow img'), { width: 20.504, height: 20.504 }, 't-f1')
-    .to(featTabs, { width: 1263, bottom: 1 }, 't-f1')
-    .to(fgIntro, { opacity: 0, duration: 0.5 }, 't-f1')
-    .to(fgTabs, { opacity: 1, duration: 0.5 }, 't-f1+=0.5');
+  tl.to([fiHead, fSec, fTicks], { y: -238, duration: 0.9 }, 't-f1');
   tl.addLabel('feat-1'); hold(0.9);
   // tabs 2–4 are discrete steps (see TABS below) — each gets scroll room
   tl.addLabel('feat-2'); hold(0.9);
@@ -192,11 +237,14 @@
 
   // ---- Features → Services (538:5633) ----
   tl.addLabel('t-s1');
-  tl.to(featArea, { y: -60, opacity: 0, duration: 0.6, ease: 'power2.in' }, 't-s1')
+  tl.to([fSec, fTicks], { y: -298, opacity: 0, duration: 0.6, ease: 'power2.in' }, 't-s1')
     .to(featTabs, { y: 82, duration: 0.6, ease: 'power2.in' }, 't-s1')
-    .to([fgIntro, fgTabs], { opacity: 0, duration: 0.4 }, 't-s1')
+    .to([...fGuides, fLineL, fLineR], { opacity: 0, duration: 0.4 }, 't-s1')
     .set(features, { autoAlpha: 0 }, 't-s1+=0.6')
     .to(menu, { left: 1, width: 1423, duration: 0.6 }, 't-s1')
+    .to(menuLogo, { width: 400, duration: 0.6 }, 't-s1')
+    .to(menuCta, { borderLeftColor: 'rgba(0,0,0,0.16)', duration: 0.4 }, 't-s1')
+    .to(ctaMark, { opacity: 1, duration: 0.4 }, 't-s1')
     .set(services, { autoAlpha: 1 }, 't-s1+=0.3')
     .from($$('.svc-col1, .svc-col2, .svc-col3', services), { opacity: 0, duration: 0.4, stagger: 0.06 }, 't-s1+=0.3')
     .from($$('#svcH2 .line-inner'), { yPercent: 105, stagger: 0.08, duration: 0.6, ease: 'power3.out' }, 't-s1+=0.35')
@@ -215,19 +263,20 @@
   /* ======================================================================
      DISCRETE STEPS (tabs + services) — time-based transitions, scroll-triggered
      ====================================================================== */
-  const fText = k => $(`[data-f="${k}"]`, featArea);
+  const fText = k => $(`[data-f="${k}"]`, fSec);
   let curTab = 0, tabTl = null, svcTl = null;
-  function setTab(i, instant) {
+  function setTab(i, instant, skipFill) {
     if (i === curTab && !instant) return;
     const d = TABS[i], prevImg = TABS[curTab].img;
     curTab = i;
     tabs.forEach((t, k) => t.classList.toggle('is-active', k === i));
+    // (no killTweensOf here: tab 1's fill is also driven by the scroll timeline)
+    if (!(instant && skipFill)) tabFills.forEach((f, k) => { if (instant) gsap.set(f, { scaleX: k === i ? 1 : 0 }); else gsap.to(f, { scaleX: k === i ? 1 : 0, transformOrigin: k === i ? '0% 50%' : '100% 50%', duration: 0.55, ease: 'power3.inOut' }); });
     const swap = [fText('label'), fText('h3'), fText('body'), fText('link'), fText('r0'), fText('r1'), fText('r2')];
     const apply = () => {
       fText('label').textContent = d.label;
       fText('h3').textContent = d.h3;
       fText('body').textContent = d.body;
-      fText('body').classList.toggle('is-wide', !!d.wide);
       fText('link').textContent = d.link;
       d.rows.forEach((r, k) => (fText('r' + k).textContent = r));
     };
@@ -384,18 +433,6 @@
   };
 
   // Hero "skeleton" (Loader -> Hero 562:6444): everything but the grid is invisible
-  const menuTexts = $$('.menu-cell > span, .menu-logo img', menu);
-  const btnAccent = $('.btn-accent', btns);
-  const btnTexts = $$('.btn > *', btns);
-  const vline = $('#heroVLine');
-  // masked line reveal helpers (reference: text slides up line by line inside a mask)
-  function maskify(el) {
-    if (el.querySelector('.line-mask')) return;
-    el.innerHTML = `<span class="line-mask"><span class="line-inner">${el.innerHTML}</span></span>`;
-  }
-  const revealTexts = [...menuTexts.filter(e => e.tagName !== 'IMG'), ...btnTexts.filter(e => !e.classList.contains('arrow')), $('#scrollHint > span')];
-  revealTexts.forEach(maskify);
-  const inners = el => $$('.line-inner', el);
 
   // Hero "skeleton" (Loader -> Hero 562:6444): only the grid lines are visible
   function skeleton() {
@@ -512,7 +549,7 @@
     if (lab === 'loader-hero') { skeleton(); gsap.set(frame, { outlineColor: 'rgba(0,0,0,1)' }); }
     const t = L[lab] !== undefined ? L[lab] : 0;
     tl.time(t);
-    curTab = tabAt(t); curSvc = svcAt(t); setTab(curTab, true); setSvc(curSvc, true);
+    curTab = tabAt(t); curSvc = svcAt(t); setTab(curTab, true, t < L['feat-intro']); setSvc(curSvc, true);
     if (hashState !== 'static' && hashState !== 'loader-hero') { // allow scrolling from here
       setHeight(); addEventListener('resize', setHeight);
       scrollTo(0, t * unitPx()); target = current = t;

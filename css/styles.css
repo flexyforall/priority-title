@@ -106,9 +106,17 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .stat .cap { opacity: 0; }
 .stat .num, .stat .cap { flex: 1 0 0; min-width: 1px; }
 
-/* ---------- FEATURES ---------- */
-/* intro heading block (528:4855): x0 y48 1424x283, px40 py80 */
-.fi-head { position: absolute; left: 0; top: 48px; width: 1424px; height: 283px; padding: 80px 40px; display: flex; align-items: center; justify-content: center; }
+/* ---------- FEATURES (v2: 677:37473 … 677:38598) ---------- */
+.f-window { position: absolute; inset: 0; background: var(--color-background-primary); clip-path: inset(0px 713px 0px 711px); }
+.f-line { position: absolute; display: block; width: 1px; background: var(--color-border-default); }
+#fLineL { left: 710px; top: 48px; height: 736px; }
+#fLineR { left: 710px; top: 48px; height: 656px; }
+.f-guide { position: absolute; width: 1px; height: 0; }
+.f-guide img { position: absolute; left: 0; top: 0; height: 1px; transform-origin: 0 0; transform: rotate(90deg); }
+.f-col { position: absolute; left: 0; top: 49px; width: 1424px; height: 655px; overflow: hidden; }
+
+/* title block: 1424×283, content 1100 centred (eyebrow at x 202) */
+.fi-head { position: absolute; left: 0; top: 0; width: 1424px; height: 283px; padding: 80px 40px; display: flex; align-items: center; justify-content: center; }
 .fi-head-in { width: 1100px; padding: 0 40px; display: flex; gap: 10px; align-items: flex-end; }
 .fi-head-l { flex: 1 0 0; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
 .fi-eyebrow { color: var(--color-text-secondary); font-weight: 400; }
@@ -116,42 +124,49 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .fi-head-r { align-self: stretch; display: flex; flex-direction: column; justify-content: flex-end; gap: 10px; padding: 16px 0 4px; }
 .fi-lead { width: 416px; color: var(--color-text-secondary); }
 
-/* content section — tab state: top 90 h694 · intro state: top 331 h670 */
-.feat-area { position: absolute; left: 0; top: 90px; width: 1424px; height: 694px; padding: 0 160px 60px; display: flex; align-items: flex-end; }
-.feat-area::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; background: var(--color-border-default); }
-.feat-card { position: relative; flex: 1 0 0; height: 100%; display: flex; }
-.feat-card::after { content: ""; position: absolute; inset: 0 -1px; border-left: 1px solid var(--color-border-default); border-right: 1px solid var(--color-border-default); pointer-events: none; z-index: 2; }
-.feat-left { flex: 1 0 0; min-width: 0; height: 100%; display: flex; flex-direction: column; justify-content: space-between; }
-.feat-top { flex: 1 0 0; padding: 40px; display: flex; flex-direction: column; justify-content: space-between; }
+/* section: top border full width; card 1112×609 at x 156 (no side borders — the two lines are its edges) */
+.f-sec { position: absolute; left: 0; top: 283px; width: 1424px; height: 670px; }
+.f-sec::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; background: var(--color-border-default); }
+.feat-card { position: absolute; left: 156px; top: 1px; width: 1112px; height: 609px; display: flex; }
+.feat-left { width: 556.5px; flex: none; height: 100%; display: flex; flex-direction: column; box-shadow: inset -1px 0 0 var(--color-border-default); }
+.feat-top { height: 371px; flex: none; padding: 40px; display: flex; flex-direction: column; justify-content: space-between; }
 .feat-text { display: flex; flex-direction: column; gap: 16px; }
-.feat-label { position: relative; color: var(--color-text-tertiary); height: 17px; }
-.feat-label > span { position: absolute; left: 0; top: 0; white-space: nowrap; font-weight: 500; }
-.feat-label .lbl-intro { font-family: var(--font-body); font-size: 16px; line-height: 1.2; letter-spacing: -0.32px; opacity: 0; }
+.feat-label { color: var(--color-text-tertiary); font-family: var(--font-body); font-weight: 500; font-size: 16px; line-height: 1.2; letter-spacing: -0.32px; white-space: nowrap; }
 .feat-h3 { width: 413px; color: var(--color-text-primary); }
 .feat-h3 [data-f="h3"] { white-space: pre-line; } /* line breaks exactly as in Figma */
 .feat-body { width: 413px; color: var(--color-text-secondary); }
-.feat-body.is-wide { width: 445px; }
-.feat-link { align-self: flex-start; font-family: var(--font-body); font-weight: 500; font-size: 20px; line-height: 1.2; letter-spacing: -0.4px; white-space: nowrap; }
+.feat-link { align-self: flex-start; gap: 4px; font-family: var(--font-body); font-weight: 500; font-size: 16px; line-height: 1.2; letter-spacing: -0.32px; white-space: nowrap; }
+.feat-link .arrow { padding-top: 2px; }
+.feat-link .arrow img { width: 13.7893px; height: 13.7893px; }
 .feat-rows { padding-bottom: 40px; display: flex; flex-direction: column; }
 .feat-row { position: relative; height: 66px; padding: 20px 40px; color: var(--color-text-primary); box-shadow: inset 0 1.149px 0 var(--color-border-default); }
-.feat-row .dash { position: absolute; }
-.feat-media { flex: 1 0 0; min-width: 0; height: 100%; position: relative; overflow: hidden; z-index: 1; background: var(--color-background-primary); }
+.feat-row .row-dash { position: absolute; left: 0; bottom: 0; width: 712px; height: 1px; }
+.feat-media { width: 555.5px; flex: none; height: 100%; position: relative; overflow: hidden; z-index: 1; }
 .fm { position: absolute; inset: 0; }
 .fm .ph { position: absolute; inset: 0; overflow: hidden; }
 .fm .ph img { position: absolute; }
 .fm .ov { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.feat-tabs { position: absolute; right: 0; bottom: 1px; width: 1263px; height: 80px; display: flex; align-items: flex-start; z-index: 5; }
-.tab { flex: 1 0 0; min-width: 0; height: 100%; display: flex; align-items: center; justify-content: center; padding: 0 20px; text-align: center;
-  background: var(--color-background-primary); color: var(--color-text-secondary);
-  box-shadow: inset 0 1px 0 var(--color-border-strong), inset -1px 0 0 var(--color-border-strong);
-  transition: background-color .45s cubic-bezier(.22,.61,.36,1), color .45s cubic-bezier(.22,.61,.36,1), box-shadow .45s; }
-.tab:first-child { box-shadow: inset 0 1px 0 var(--color-border-strong), inset -1px 0 0 var(--color-border-strong), inset 1px 0 0 var(--color-border-strong); }
-.tab:last-child { box-shadow: inset 0 1px 0 var(--color-border-strong); }
-.tab.is-active { background: var(--color-background-inverse); color: var(--color-text-inverse); box-shadow: none; }
-.tab:not(.is-active):hover { background: #ecece4; }
-.fguides { position: absolute; inset: 0; pointer-events: none; z-index: 45; }
-.fguide { position: absolute; width: 7.778px; display: flex; align-items: center; justify-content: center; }
-.fguide img { flex: none; display: block; height: 7.778px; transform: rotate(90deg); }
+
+/* "\" ticks on the section top border */
+.f-ticks { position: absolute; inset: 0; pointer-events: none; }
+.f-ticks i { position: absolute; top: 327.64px; width: 7.778px; height: 7.778px; display: flex; align-items: center; justify-content: center; }
+.f-ticks i::before { content: ""; width: 2px; height: 9px; background: #acaca7; transform: rotate(45deg) scaleY(-1); }
+
+/* tabs bar 1267×80 at (157,704); cells 317.75 / 316.75 / 316.75 / 315.75 */
+.feat-tabs { position: absolute; left: 157px; bottom: 0; width: 1267px; height: 80px; display: flex; align-items: flex-start; z-index: 5;
+  --tb: #000; --tbi: var(--tb); }
+.ready .feat-tabs { z-index: 120; }   /* above the texture, like the CTA buttons it grows from */
+.tab { position: relative; flex: none; height: 100%; display: flex; align-items: center; justify-content: center; padding: 0 20px; text-align: center;
+  background: transparent; color: var(--color-text-primary);
+  box-shadow: inset 0 1px 0 var(--tb), inset -1px 0 0 var(--tbr, var(--tb)); transition: color .45s cubic-bezier(.22,.61,.36,1); }
+.tab:nth-child(1) { width: 317.75px; box-shadow: inset 0 1px 0 var(--tb), inset -1px 0 0 var(--tb), inset 1px 0 0 var(--tb); }
+.tab:nth-child(2) { width: 316.75px; --tbr: var(--tbi); }
+.tab:nth-child(3) { width: 316.75px; --tbr: var(--tbi); }
+.tab:nth-child(4) { width: 315.75px; box-shadow: inset 0 1px 0 var(--tb); }
+.tab-fill { position: absolute; inset: 0; background: var(--color-background-inverse); transform: scaleX(0); transform-origin: 0 50%; }
+.tab-t { position: relative; }
+.tab.is-active { color: var(--color-text-inverse); }
+.tab:not(.is-active):hover .tab-t { opacity: .6; }
 
 /* ---------- SERVICES ---------- */
 .svc-row { position: absolute; left: 0; right: 2px; top: 0; display: flex; align-items: flex-start; justify-content: space-between; background: var(--color-background-primary); }
