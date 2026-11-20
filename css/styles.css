@@ -189,7 +189,9 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .ld-art img { opacity: 0; }
 .ld-frame { display: block; opacity: 0; left: 7px; top: 9px; width: 1426px; height: 784px; border: 1px solid rgba(0, 0, 0, 0.16); } /* 638:29301, stroke outside the 1424×782 box */
 .ld-cover { display: block; left: 0; top: 0; width: 1440px; height: 800px; background: var(--color-background-primary); will-change: transform; }
-.ld-line { display: block; left: 0; top: 0; background: rgba(0, 0, 0, 0.16); will-change: transform; }
+.ld-line { display: block; left: 0; top: 0; background: rgba(0, 0, 0, 0.16); will-change: transform; opacity: 0; }
+/* nothing is painted until the first loader frame is laid out (prevents a flash of the unscaled stage) */
+html:not(.booted) #stage { visibility: hidden; }
 .ld-line.h { width: 1440px; height: 1px; }
 .ld-line.v { height: 800px; width: 1px; }
 .h3-dot { opacity: 0; }

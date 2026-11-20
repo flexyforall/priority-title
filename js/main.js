@@ -352,19 +352,22 @@
     covers[2].style.transform = `translate3d(${R.x - 1440}px, 0, 0)`;
     covers[3].style.transform = `translate3d(${R.x + R.w}px, 0, 0)`;
     ldT.style.transform = `translate3d(0, ${R.y}px, 0)`;
-    ldB.style.transform = `translate3d(0, ${R.y + R.h - 1}px, 0)`;
-    ldLn.style.transform = `translate3d(${R.x - 1}px, 0, 0)`;
-    ldR.style.transform = `translate3d(${R.x + R.w - 1}px, 0, 0)`;
+    // at zero size the pairs of lines must land on the same pixel (638:29922 — a single cross)
+    const kx = Math.min(1, R.w), ky = Math.min(1, R.h);
+    ldB.style.transform = `translate3d(0, ${R.y + R.h - ky}px, 0)`;
+    ldLn.style.transform = `translate3d(${R.x - kx}px, 0, 0)`;
+    ldR.style.transform = `translate3d(${R.x + R.w - kx}px, 0, 0)`;
   }
   // window rects, straight from the Figma loader frames
   const RECT = {
     start: { x: 8, y: 9, w: 1425, h: 784 },            // 638:29300 — lines start on the new 1px frame border (7,9 → 1432,792)
     step2: { x: 55, y: 54, w: 1332, h: 692 },          // 501:4439
     step3: { x: 477, y: 274, w: 483, h: 245 },         // 501:4479 — tight around the P
+    point: { x: 720, y: 400, w: 0, h: 0 },             // 638:29922 — fully collapsed: one horizontal + one vertical line
+    open1: { x: 489, y: 275, w: 460, h: 244 },         // 638:29942 — lines at x 488/948, y 275/518, hero grid inside
     step4: { x: 123, y: 93, w: 1190, h: 616 },         // 501:4508
     hero:  { x: 8, y: 10, w: 1424, h: 782 },           // 562:6444 — the hero frame
   };
-  const path = (...keys) => ({ x: keys.map(k => RECT[k].x), y: keys.map(k => RECT[k].y), w: keys.map(k => RECT[k].w), h: keys.map(k => RECT[k].h) });
 
   // Hero "skeleton" (Loader -> Hero 562:6444): everything but the grid is invisible
   const menuTexts = $$('.menu-cell > span, .menu-logo img', menu);
@@ -454,6 +457,7 @@
     Object.assign(R, RECT.start);
     drawRect();
     gsap.set(lines, { opacity: 0 });
+    root.classList.add('booted');
     const ld = gsap.timeline({ onUpdate: drawRect });
     // 1 · 638:29300 — grey outlined P on the perspective guides (fade only: no scaling = no shake)
     ld.fromTo(['#ldPGrey', '.ld-guides', '#ldFrame'], { opacity: 0 }, { opacity: 1, duration: 0.7, ease: 'power1.out' }, 0)
@@ -462,15 +466,18 @@
       .to('#ldPOrange', { opacity: 1, duration: 0.5, ease: 'power1.inOut' }, 0.7)
       .to(lines, { opacity: 1, duration: 0.4, ease: 'power1.out' }, 0.7)
     // 2 → 3 · one continuous move: lines glide in and close tight around the logo
-      .to(R, { keyframes: { ...path('step2', 'step3'), easeEach: 'none' }, ease: 'power3.inOut', duration: 1.4 }, 0.8)
-    // logo & guides fade while the window is closed
-      .to(['#ldPGrey', '#ldPOrange', '.ld-guides'], { opacity: 0, duration: 0.35, ease: 'power1.in' }, 2.15)
-      .set(ldArt, { autoAlpha: 0 }, 2.5)
-    // 3 → 4 → hero · lines open up and reveal the hero grid (Loader -> Hero)
-      .to(R, { keyframes: { ...path('step4', 'hero'), easeEach: 'none' }, ease: 'power3.inOut', duration: 1.3 }, 2.45)
-      .to(lines, { opacity: 0, duration: 0.45, ease: 'power1.inOut' }, 3.6)
-      .add(() => heroIntro().eventCallback('onComplete', startScroll), 3.55)
-      .add(() => { $('#loader').style.display = 'none'; }, 4.1);
+    //     (start, step2, step3 share one centre, so a single tween passes through 501:4439 with no joints = no jerks)
+      .to(R, { ...RECT.step3, duration: 1.5, ease: 'power2.inOut' }, 0.8)
+    // 3 → collapse (638:29922) · the window keeps closing until all four lines meet in one cross;
+    //     the logo is simply squeezed out by the clip — no fade, no movement
+      .to(R, { ...RECT.point, duration: 0.6, ease: 'power3.in' }, 2.45)
+      .set(ldArt, { autoAlpha: 0 }, 3.05)
+    // collapse → 638:29942 → 501:4508 → Loader -> Hero · lines spring open and reveal the hero grid
+    //     (open1, step4 and the hero frame are all centred on the cross, so one tween runs through them smoothly)
+      .to(R, { ...RECT.hero, duration: 1.6, ease: 'power3.out' }, 3.2)
+      .to(lines, { opacity: 0, duration: 0.45, ease: 'power1.inOut' }, 4.55)
+      .add(() => heroIntro().eventCallback('onComplete', startScroll), 4.45)
+      .add(() => { $('#loader').style.display = 'none'; }, 5.0);
   }
 
   /* ======================================================================
@@ -482,6 +489,7 @@
 
   if (hashState) {
     // review mode: #state=<label> renders that Figma state instantly (no loader)
+    root.classList.add('booted');
     $('#loader').style.display = 'none';
     root.classList.remove('is-loading');
     if (hashState !== 'loader-hero') { root.classList.add('ready'); liveGuides(); gsap.set('#tlDark', { opacity: 0 }); startProgress(); }
