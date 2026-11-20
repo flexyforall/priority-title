@@ -43,7 +43,7 @@
   /* ---------------- elements ---------------- */
   const frame = $('#frame'), menu = $('#menu'), menuCta = $('#menuCta');
   const hero = $('#hero'), features = $('#features'), services = $('#services');
-  const media = $('#heroMedia'), heroImg = $('#heroImg'), heroSmall = $('#heroSmall');
+  const media = $('#heroMedia'), heroImg = $('#heroImg');
   const title = $('#heroTitle'), sub = $('#heroSub'), timeline = $('#heroTimeline');
   const stats = $('#heroStats'), statEls = $$('.stat', stats);
   const colLine = $('#heroColLine'), sep = $('#heroSep'), guides = $('#heroGuides'), btns = $('#heroBtns');
@@ -56,10 +56,9 @@
      INITIAL (pre-scroll) STATES
      ====================================================================== */
   gsap.set([features, services], { autoAlpha: 0 });
-  gsap.set(heroSmall, { opacity: 0 });
-  gsap.set('#heroSmallB2', { opacity: 0 });
   gsap.set(stats, { y: 447 + 225.5, opacity: 0 });
   gsap.set(statEls, { opacity: 0.4 });
+  gsap.set(colLine, { opacity: 0 });
   gsap.set($$('.cap', stats), { opacity: 0 });
   gsap.set('#tlDark', { opacity: 0 });
   menu.style.left = '0px';
@@ -85,65 +84,80 @@
   const HOLD = 0.55;
   const hold = (d = HOLD) => tl.to({}, { duration: d });
 
-  // ---- Hero 1 (512:4618) ----
+  // Values: partials/hero-metrics-v2-notes.md ("Hero Metrics" 595:6527 → 612:6755 → 595:6669 → 528:4762 → 612:6831).
+  // Coordinates are inner-frame px. Coconat renders ~1px higher in Chrome than in Figma → +1 on H1/stats (see README).
+  const STAT_Y = { B: 447 + 1, C: 228 + 1, D: 0 + 1, E: -226 + 1 };
+  const capOf = i => $('.cap', statEls[i]);
+
+  // ---- REST (638:29573) ----
   tl.addLabel('hero-1'); hold(0.35);
 
-  // ---- Hero 1 → 2 (595:6527): photo window narrows to 1079, timeline overlay leaves ----
+  // ---- REST → A (595:6527): the hero slides left — photo window narrows to 1082, a column line follows its edge
+  //      and stops on the button top (y 703); progress overlay and scroll guides fade out ----
   tl.addLabel('t-h2');
-  tl.to(media, { width: 1079 }, 't-h2')
-    .to(heroImg, { left: -200 }, 't-h2')
-    .to(timeline, { opacity: 0, y: -12, duration: 0.5 }, 't-h2')
-    .fromTo(colLine, { left: 1424, top: 48, height: 734, opacity: 0 }, { left: 1079, top: 48, height: 734, opacity: 1 }, 't-h2')
-    .to(sep, { width: 1079 }, 't-h2')
-    .to([btns, guides], { x: -5.11 }, 't-h2');
+  tl.to(media, { width: 1082 }, 't-h2')
+    .to(heroImg, { left: -199 }, 't-h2')
+    .to(timeline, { opacity: 0, duration: 0.45, ease: 'power1.out' }, 't-h2')
+    .to(guides, { opacity: 0, duration: 0.45, ease: 'power1.out' }, 't-h2')
+    .fromTo(colLine, { left: 1424, top: 47, height: 656, opacity: 0 }, { left: 1081, top: 47, height: 656, opacity: 1 }, 't-h2');
   tl.addLabel('hero-2'); hold();
 
-  // ---- Hero 2 → 3 (612:6755): photo shrinks to 542×317 at 150,223; stats column rises ----
+  // ---- A → B (612:6755): photo shrinks to 542×317 at 150,223; stats column rises, subtitle fades ----
   tl.addLabel('t-h3');
   tl.to(media, { left: 150, top: 223, width: 542.275, height: 317 }, 't-h3')
-    .to(heroImg, { left: -271.5, top: -72.646, width: 1085.285, height: 443.947 }, 't-h3')
+    .to(heroImg, { left: -271.504, top: -72.646, width: 1085.285, height: 443.947 }, 't-h3')
     .to(sub, { opacity: 0, duration: 0.5 }, 't-h3')
-    .to(sep, { opacity: 0, duration: 0.6 }, 't-h3')
-    .to(colLine, { left: 709 }, 't-h3')
-    .to(stats, { y: 447, opacity: 1 }, 't-h3');
+    .to(colLine, { left: 709, top: 48 }, 't-h3')
+    // the line only grows past the buttons once it is left of them (x < 712) — never shows through "Find a location"
+    .to(colLine, { height: 734, duration: 0.1, ease: 'none' }, 't-h3+=0.9')
+    .to(stats, { y: STAT_Y.B, opacity: 1 }, 't-h3')
+    .fromTo(statEls, { opacity: 0.4 }, { opacity: (i) => [0.3, 0.4, 0.4][i] }, 't-h3');
   tl.addLabel('hero-3'); hold();
 
-  // ---- Hero 3 → 4 (595:6669): photo lands bottom-left 399×242, H1 centres, "7 Regions" highlighted ----
+  // ---- B → C (595:6669): ONE photo glides to the bottom-left corner above the H1 (a pure ×0.7598 scale),
+  //      H1 centres, "7 Regions" highlighted ----
   tl.addLabel('t-h4');
   tl.to(frame, { top: 8, height: 784 }, 't-h4')
-    .to(hero, { top: 1 }, 't-h4') // Figma 784-tall states inset content by 1px
     .to(menu, { left: 1, top: 1 }, 't-h4')
-    .to(media, { left: 1, top: 541, width: 399, height: 242 }, 't-h4')
-    .to(heroImg, { left: -110, top: -45, width: 620, height: 254 }, 't-h4')
-    .to(heroSmall, { opacity: 1, duration: 0.45, ease: 'power1.inOut' }, 't-h4+=0.45')
-    .to(title, { left: 41, top: 303.5 }, 't-h4')
-    .to(colLine, { left: 711, height: 735 }, 't-h4')
-    .to([btns, guides], { x: 0 }, 't-h4')
-    .to(guides, { y: -2 }, 't-h4')
-    .to(stats, { y: 227 }, 't-h4')
+    .to(media, { left: 0, top: 543.156, width: 412, height: 240.844 }, 't-h4')
+    .to(heroImg, { left: -206.277, top: -55.193, width: 824.557, height: 337.294 }, 't-h4')
+    .to(title, { left: 40, top: 304.5 + 1 }, 't-h4')
+    .to(colLine, { left: 709, top: 49, height: 735 }, 't-h4')
+    .to(stats, { y: STAT_Y.C, x: 1 }, 't-h4')
     .to(statEls[0], { opacity: 1 }, 't-h4')
-    .to($('.cap', statEls[0]), { opacity: 1 }, 't-h4+=0.3');
+    .to(statEls[1], { opacity: 0.3 }, 't-h4')
+    .to(capOf(0), { opacity: 1, duration: 0.6 }, 't-h4+=0.4');
   tl.addLabel('hero-4'); hold();
 
-  // ---- Hero 4 → 5 (528:4762 / 612:6831): stats scroll, "58 Years" highlighted ----
+  // ---- C → D (528:4762): stats scroll, "58 Years" highlighted ----
   tl.addLabel('t-h5');
-  tl.to(media, { left: 3 }, 't-h5')
-    .to('#heroSmallB2', { opacity: 1 }, 't-h5')
-    .to(stats, { y: 0 }, 't-h5')
-    .to(statEls[0], { opacity: 0.4 }, 't-h5')
-    .to($('.cap', statEls[0]), { opacity: 0, duration: 0.5 }, 't-h5')
+  tl.to(media, { left: 1, top: 542.156 }, 't-h5')
+    .to(title, { left: 41, top: 303.5 + 1 }, 't-h5')
+    .to(colLine, { left: 710, top: 48 }, 't-h5')
+    .to(stats, { y: STAT_Y.D, x: 0 }, 't-h5')
+    .to(statEls[0], { opacity: 0.3 }, 't-h5')
+    .to(capOf(0), { opacity: 0, duration: 0.45 }, 't-h5')
     .to(statEls[1], { opacity: 1 }, 't-h5')
-    .to($('.cap', statEls[1]), { opacity: 1, duration: 0.6 }, 't-h5+=0.4');
-  tl.addLabel('hero-5'); hold(0.8);
+    .to(statEls[2], { opacity: 0.3 }, 't-h5')
+    .to(capOf(1), { opacity: 1, duration: 0.6 }, 't-h5+=0.4');
+  tl.addLabel('hero-5'); hold();
+
+  // ---- D → E (612:6831): "12,000+" gets its own step and lands in the middle slot (no longer cut off) ----
+  tl.addLabel('t-h6');
+  tl.to(stats, { y: STAT_Y.E }, 't-h6')
+    .to(statEls[1], { opacity: 0.3 }, 't-h6')
+    .to(capOf(1), { opacity: 0, duration: 0.45 }, 't-h6')
+    .to(statEls[2], { opacity: 1 }, 't-h6')
+    .to(capOf(2), { opacity: 1, duration: 0.6 }, 't-h6+=0.4');
+  tl.addLabel('hero-6'); hold(0.8);
 
   // ---- Hero → Features intro (528:4855) ----
   tl.addLabel('t-f0');
-  tl.to(stats, { y: -340, opacity: 0, duration: 0.8, ease: 'power2.in' }, 't-f0')
+  tl.to(stats, { y: '-=340', opacity: 0, duration: 0.8, ease: 'power2.in' }, 't-f0')
     .to(title, { y: -120, opacity: 0, duration: 0.7, ease: 'power2.in' }, 't-f0')
     .to(media, { top: 783, height: 0, duration: 0.7, ease: 'power2.in' }, 't-f0')
     .to(heroImg, { top: -300, duration: 0.7, ease: 'power2.in' }, 't-f0')
     .to(btns, { y: 82, duration: 0.6, ease: 'power2.in' }, 't-f0')
-    .to(guides, { opacity: 0, duration: 0.4 }, 't-f0')
     .to(colLine, { scaleY: 0, transformOrigin: '50% 0%', duration: 0.7, ease: 'power2.in' }, 't-f0')
     .set(hero, { autoAlpha: 0 }, 't-f0+=0.8')
     .to(menu, { left: 0, top: 0, width: 1424, duration: 0.6 }, 't-f0')
@@ -313,7 +327,7 @@
   $$('.menu-cell[href="#services"]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); scrollToLabel('svc-1'); }));
   $$('a[href="#"]').forEach(a => a.addEventListener('click', e => e.preventDefault()));
   addEventListener('keydown', e => {
-    const names = ['hero-1', 'hero-2', 'hero-3', 'hero-4', 'hero-5', 'feat-intro', 'feat-1', 'feat-2', 'feat-3', 'feat-4', 'svc-1', 'svc-2', 'svc-3', 'svc-4'];
+    const names = ['hero-1', 'hero-2', 'hero-3', 'hero-4', 'hero-5', 'hero-6', 'feat-intro', 'feat-1', 'feat-2', 'feat-3', 'feat-4', 'svc-1', 'svc-2', 'svc-3', 'svc-4'];
     if (!['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', ' '].includes(e.key)) return;
     e.preventDefault();
     const dir = (e.key === 'ArrowUp' || e.key === 'PageUp') ? -1 : 1;
@@ -410,6 +424,7 @@
       .to(heroImg, { opacity: 1, duration: 0.7, ease: 'power1.out' }, 0.25)
       .to(heroImg, { scale: 1, duration: 2.4, ease: out }, 0.25)
       .to('#tlDark', { opacity: 0, duration: 0.6, ease: 'power1.inOut' }, 0.45)
+      .to(sep, { opacity: 0, duration: 0.6, ease: 'power1.inOut' }, 0.45) // REST has no line under the photo
       .add(() => startProgress(), 0.9)
       // texts slide up inside their masks
       .to('.menu-logo img', { opacity: 1, duration: 0.6, ease: 'power1.out' }, 0.35)
@@ -484,7 +499,7 @@
      BOOT
      ====================================================================== */
   const ready = document.fonts ? document.fonts.ready : Promise.resolve();
-  const imgs = ['assets/hero/hero-photo-full.png', 'assets/loader/letter-p-grey-v2.svg', 'assets/loader/letter-p-orange-v2.svg', 'assets/loader/guides-perspective-v2-loader1.svg', 'assets/common/texture-stripes.svg']
+  const imgs = ['assets/hero/hero-photo-full.png', 'assets/loader/letter-p-grey-v2.svg', 'assets/loader/letter-p-orange-v2.svg', 'assets/loader/guides-perspective-v2-loader1.svg', 'assets/hero/texture-stripes-o06.svg']
     .map(src => new Promise(res => { const i = new Image(); i.onload = i.onerror = res; i.src = src; }));
 
   if (hashState) {
@@ -492,7 +507,7 @@
     root.classList.add('booted');
     $('#loader').style.display = 'none';
     root.classList.remove('is-loading');
-    if (hashState !== 'loader-hero') { root.classList.add('ready'); liveGuides(); gsap.set('#tlDark', { opacity: 0 }); startProgress(); }
+    if (hashState !== 'loader-hero') { root.classList.add('ready'); liveGuides(); gsap.set(['#tlDark', sep], { opacity: 0 }); startProgress(); }
     const lab = hashState === 'static' ? 'hero-1' : hashState;
     if (lab === 'loader-hero') { skeleton(); gsap.set(frame, { outlineColor: 'rgba(0,0,0,1)' }); }
     const t = L[lab] !== undefined ? L[lab] : 0;

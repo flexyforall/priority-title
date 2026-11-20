@@ -88,7 +88,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 /* progress fill (Line 62): 1px solid #F6F6EF on the track's centre line (svg y 3.5) */
 .tl-fill { position: absolute; left: 0; top: 3px; height: 1px; width: 1424px; background: var(--color-text-inverse); transform: scaleX(0); transform-origin: 0 50%; will-change: transform; }
 
-.hero-title { width: 574px; color: var(--color-text-primary); position: absolute; left: 40px; top: 522px; z-index: 4; } /* +2: Coconat baseline in Chrome vs Figma */
+.hero-title { width: 574px; color: var(--color-text-primary); position: absolute; left: 40px; top: 522px; z-index: 1; } /* photo paints above the H1 (Hero Metrics) */ /* +2: Coconat baseline in Chrome vs Figma */
 .hero-sub { width: 586px; color: var(--color-text-secondary); position: absolute; left: 40px; top: 679px; }
 
 .hero-guides { position: absolute; left: 0; bottom: 0; width: 1424px; height: 302px; pointer-events: none; }
