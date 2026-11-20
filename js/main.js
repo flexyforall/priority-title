@@ -64,6 +64,20 @@
   const revealTexts = [...menuTexts.filter(e => e.tagName !== 'IMG'), ...btnTexts.filter(e => !e.classList.contains('arrow')), $('#scrollHint > span')];
   revealTexts.forEach(maskify);
   const inners = el => $$('.line-inner', el);
+
+  // letter-roll hover: duplicate every character into a 2-row strip; the strip slides up on hover (CSS)
+  function rollify(el) {
+    if (!el || el.dataset.roll) return;
+    const host = el.querySelector('.line-inner') || el;
+    const text = host.textContent;
+    host.setAttribute('aria-label', text);
+    host.innerHTML = [...text].map((c, i) => {
+      const ch = c === ' ' ? '&nbsp;' : c.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+      return `<span class="rch" aria-hidden="true" style="--i:${i}"><span>${ch}</span><span>${ch}</span></span>`;
+    }).join('');
+    el.dataset.roll = '1';
+  }
+  [...$$('.menu-cell > span', menu), ...$$('.btn > .t-btn-l', btns), ...$$('.tab-t'), ...$$('.svc-t')].forEach(rollify);
   const svcItems = $$('.svc-item'), svcFills = $$('.svc-fill'), illus = $$('.svc-illu');
 
   /* ======================================================================
@@ -262,8 +276,9 @@
     .fromTo($$('[data-layer="parcel"], [data-layer="survey-stakes"], [data-layer="dimension"]', illus[0]), { opacity: 0, y: -24 }, { opacity: 1, y: 0, stagger: 0.1, duration: 0.5, ease: 'power2.out' }, 't-s1+=1.7')
     .fromTo($$('.svc-t', svcList), { opacity: 0 }, { opacity: 1, duration: 0.45, stagger: 0.05, ease: 'power1.out' }, 't-s1+=' + (SCROLL - 0.1))
     // 4 · row 1 fills black (538:5633)
-    .fromTo(svcFills[0], { scaleX: 0 }, { scaleX: 1, ease: 'power3.inOut', duration: 0.7 }, 't-s1+=' + SCROLL)
-    .to(svcItems[0], { color: '#f6f6ef', duration: 0.01 }, 't-s1+=' + (SCROLL + 0.33))
+    .fromTo(svcFills[0], { scaleX: 0 }, { scaleX: 1, duration: 0.01, ease: 'none', immediateRender: false }, 't-s1+=' + (SCROLL + 0.3))
+    .fromTo(svcItems[0], { color: '#000000' }, { color: '#f6f6ef', duration: 0.01, ease: 'none', immediateRender: false }, 't-s1+=' + (SCROLL + 0.3))
+    .to({}, { duration: 0.4 })
     .set(features, { autoAlpha: 0 }, 't-s1+=' + SCROLL);
   tl.addLabel('svc-a', 't-s1+=0.67').addLabel('svc-b', 't-s1+=1.4').addLabel('svc-c', 't-s1+=' + SCROLL); // storyboard frames for review links
   tl.addLabel('svc-1'); hold(0.9);
@@ -344,8 +359,8 @@
     svcFills.forEach((f, k) => { if (k !== i) gsap.set(f, { scaleX: 0 }); });
     if (instant) { svcItems[i].classList.add('is-active'); gsap.set(svcFills[i], { scaleX: 1 }); }
     else {
-      svcActTimer = gsap.delayedCall(0.38, () => svcItems[i].classList.add('is-active'));
-      svcFillTw = gsap.fromTo(svcFills[i], { scaleX: 0, transformOrigin: '0% 50%' }, { scaleX: 1, duration: 0.8, ease: 'power3.inOut' });
+      svcItems[i].classList.add('is-active');      // on at once — no sweep
+      gsap.set(svcFills[i], { scaleX: 1 });
     }
     $('#svcList').classList.toggle('has-top', i > 0);
     const fields = $$('[data-s]', services);
